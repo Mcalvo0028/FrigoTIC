@@ -5,14 +5,21 @@
  * @package FrigoTIC
  * @author MJCRSoftware
  * @version 1.0.0
+ * 
+ * Los valores se cargan desde el archivo .env
  */
 
+require_once dirname(__DIR__) . '/helpers/EnvHelper.php';
+use App\Helpers\EnvHelper;
+
+EnvHelper::load();
+
 return [
-    'host' => 'localhost',
-    'port' => 3307,           // Puerto diferente para no conflictuar con MySQL existente
-    'database' => 'frigotic',
-    'username' => 'frigotic_user',
-    'password' => '',         // Configurar en database.local.php
+    'host' => EnvHelper::get('DB_HOST', 'localhost'),
+    'port' => EnvHelper::get('DB_PORT', '3306'),
+    'database' => EnvHelper::get('DB_NAME', 'frigotic'),
+    'username' => EnvHelper::get('DB_USER', 'root'),
+    'password' => EnvHelper::get('DB_PASS', ''),
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'options' => [

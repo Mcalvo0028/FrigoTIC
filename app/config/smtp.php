@@ -5,25 +5,32 @@
  * @package FrigoTIC
  * @author MJCRSoftware
  * @version 1.0.0
+ * 
+ * Los valores se cargan desde el archivo .env
  */
 
+require_once dirname(__DIR__) . '/helpers/EnvHelper.php';
+use App\Helpers\EnvHelper;
+
+EnvHelper::load();
+
 return [
-    'host' => 'smtp.gmail.com',
-    'port' => 587,
-    'encryption' => 'tls',    // tls o ssl
-    'username' => 'frigotic@gmail.com',
-    'password' => '',         // Configurar App Password de Google aquí
+    'host' => EnvHelper::get('SMTP_HOST', 'smtp.gmail.com'),
+    'port' => EnvHelper::get('SMTP_PORT', '587'),
+    'encryption' => EnvHelper::get('SMTP_ENCRYPTION', 'tls'),
+    'username' => EnvHelper::get('SMTP_USER', ''),
+    'password' => EnvHelper::get('SMTP_PASS', ''),
     'from' => [
-        'email' => 'frigotic@gmail.com',
-        'name' => 'FrigoTIC'
+        'email' => EnvHelper::get('SMTP_USER', 'frigotic@gmail.com'),
+        'name' => EnvHelper::get('SMTP_FROM_NAME', 'FrigoTIC')
     ],
     'reply_to' => [
-        'email' => 'frigotic@gmail.com',
-        'name' => 'FrigoTIC'
+        'email' => EnvHelper::get('SMTP_USER', 'frigotic@gmail.com'),
+        'name' => EnvHelper::get('SMTP_FROM_NAME', 'FrigoTIC')
     ],
-    // Habilitar/deshabilitar envío de correos
-    'enabled' => false,       // Cambiar a true cuando esté configurado
+    // Habilitar si hay contraseña configurada
+    'enabled' => !empty(EnvHelper::get('SMTP_PASS', '')),
     
-    // Modo debug (muestra errores detallados)
-    'debug' => false,
+    // Modo debug
+    'debug' => EnvHelper::get('APP_DEBUG', 'false') === 'true',
 ];

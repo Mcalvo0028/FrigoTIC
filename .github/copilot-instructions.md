@@ -3,10 +3,10 @@
 ## Información del Proyecto
 - **Nombre del Proyecto:** FrigoTIC
 - **Empresa Desarrolladora:** MJCRSoftware
-- **Repositorio:** https://github.com/Mcvo0028/FrigoTIC.git
+- **Repositorio:** https://github.com/Mcalvo0028/FrigoTIC.git
 - **Ubicación de Desarrollo:** C:\Programacion\FrigoTIC
 - **Ubicación de Producción:** C:\FrigoTIC
-- **Base de Datos:** MySQL (ubicada en C:\FrigoTIC\MySQL)
+- **Base de Datos:** MySQL (configurable vía .env)
 
 ## Descripción General
 FrigoTIC es una aplicación web para gestionar un frigorífico compartido en el trabajo. Funciona en una intranet y permite:
@@ -19,14 +19,17 @@ FrigoTIC es una aplicación web para gestionar un frigorífico compartido en el 
 - **Frontend:** HTML5, CSS3, JavaScript (Vanilla)
 - **Librerías:** Chart.js (gráficos), Font Awesome (iconos)
 - **Servidor:** Apache (XAMPP/WAMP o similar)
+- **Configuración:** Archivo .env para variables sensibles
 
 ## Estructura de Carpetas
 ```
 FrigoTIC/
 ├── .github/                    # Configuración de GitHub
 │   └── copilot-instructions.md
+├── .env                        # Variables de entorno (NO subir a Git)
+├── .env.example                # Plantilla de configuración
 ├── app/                        # Código principal de la aplicación
-│   ├── config/                 # Configuración (BD, SMTP, etc.)
+│   ├── config/                 # Configuración (lee del .env)
 │   ├── controllers/            # Controladores PHP
 │   ├── models/                 # Modelos de datos
 │   ├── views/                  # Vistas HTML/PHP
@@ -34,7 +37,7 @@ FrigoTIC/
 │   │   ├── user/               # Vistas del usuario
 │   │   ├── auth/               # Vistas de autenticación
 │   │   └── partials/           # Componentes reutilizables
-│   └── helpers/                # Funciones auxiliares
+│   └── helpers/                # Funciones auxiliares (incluye EnvHelper)
 ├── public/                     # Archivos públicos
 │   ├── css/                    # Estilos CSS
 │   ├── js/                     # JavaScript
@@ -88,15 +91,39 @@ FrigoTIC/
 - Sistema de ayuda contextual
 
 ### Base de Datos
-- Instancia separada de MySQL en C:\FrigoTIC\MySQL
-- my.ini específico para esta instancia
-- Puerto diferente al MySQL existente (ej: 3307)
+- Configuración en archivo `.env` (no se sube a Git)
+- Puerto configurable (desarrollo puede usar diferente puerto que producción)
+- Se puede configurar desde panel admin → Configuración
+- Credenciales por defecto: root sin contraseña (desarrollo)
 
 ### Correos SMTP
-- Cuenta: frigotic@gmail.com
-- Servidor: smtp.gmail.com
-- Puerto: 587 (TLS)
-- Plantillas configurables: bienvenida, aviso de pago, etc.
+- Configuración en archivo `.env`
+- Servidor por defecto: smtp.gmail.com:587 (TLS)
+- Se puede configurar desde panel admin → Configuración
+- Requiere contraseña de aplicación de Google
+
+## Variables de Entorno (.env)
+```env
+# Base de Datos
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=frigotic
+DB_USER=root
+DB_PASS=
+
+# SMTP
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM_NAME=FrigoTIC
+
+# Aplicación
+APP_NAME=FrigoTIC
+APP_ENV=development
+APP_DEBUG=true
+```
 
 ## Convenciones de Código
 

@@ -5,12 +5,16 @@
 
 $pageTitle = 'Configuración';
 
+require_once APP_PATH . '/helpers/EnvHelper.php';
 require_once APP_PATH . '/models/Database.php';
 require_once APP_PATH . '/models/Configuracion.php';
 require_once APP_PATH . '/models/Usuario.php';
 
+use App\Helpers\EnvHelper;
 use App\Models\Configuracion;
 use App\Models\Usuario;
+
+EnvHelper::load();
 
 $configModel = new Configuracion();
 $usuarioModel = new Usuario();
@@ -43,16 +47,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
             
+        case 'save_database':
+            $dbConfig = [
+                'host' => trim($_POST['db_host'] ?? 'localhost'),
+                'port' => trim($_POST['db_port'] ?? '3306'),
+                'name' => trim($_POST['db_name'] ?? 'frigotic'),
+                'user' => trim($_POST['db_user'] ?? 'root'),
+                'pass' => $_POST['db_pass'] ?? '',
+            ];
+            
+            // Si la contraseña está vacía, mantener la anterior
+            if (empty($dbConfig['pass'])) {
+                $dbConfig['pass'] = EnvHelper::get('DB_PASS', '');
+            }
+            
+            // Probar conexión antes de guardar
+            $testResult = EnvHelper::testDatabaseConnection($dbConfig);
+            
+            if ($testResult['success']) {
+                EnvHelper::saveDatabaseConfig($dbConfig);
+                $message = 'Configuración de base de datos guardada correctamente';
+                $messageType = 'success';
+            } else {
+                $message = 'Error de conexión: ' . $testResult['message'];
+                $messageType = 'danger';
+            }
+            break;
+            
+        case 'test_database':
+            $dbConfig = [
+                'host' => trim($_POST['db_host'] ?? 'localhost'),
+                'port' => trim($_POST['db_port'] ?? '3306'),
+                'name' => trim($_POST['db_name'] ?? 'frigotic'),
+                'user' => trim($_POST['db_user'] ?? 'root'),
+                'pass' => $_POST['db_pass'] ?? EnvHelper::get('DB_PASS', ''),
+            ];
+            
+            $testResult = EnvHelper::testDatabaseConnection($dbConfig);
+            
+            if ($testResult['success']) {
+                $message = '✅ Conexión exitosa a la base de datos';
+                $messageType = 'success';
+            } else {
+                $message = '❌ Error: ' . $testResult['message'];
+                $messageType = 'danger';
+            }
+            break;
+            
         case 'save_smtp':
-            $configModel->saveSmtpConfig([
-                'host' => $_POST['smtp_host'] ?? 'smtp.gmail.com',
-                'port' => $_POST['smtp_port'] ?? 587,
+            $smtpConfig = [
+                'host' => trim($_POST['smtp_host'] ?? 'smtp.gmail.com'),
+                'port' => trim($_POST['smtp_port'] ?? '587'),
                 'encryption' => $_POST['smtp_encryption'] ?? 'tls',
-                'username' => $_POST['smtp_user'] ?? '',
+                'username' => trim($_POST['smtp_user'] ?? ''),
                 'password' => $_POST['smtp_password'] ?? '',
-                'from_name' => $_POST['smtp_from_name'] ?? 'FrigoTIC'
-            ]);
-            $message = 'Configuración SMTP guardada';
+                'from_name' => trim($_POST['smtp_from_name'] ?? 'FrigoTIC'),
+            ];
+            
+            // Si la contraseña está vacía, mantener la anterior
+            if (empty($smtpConfig['password'])) {
+                $smtpConfig['password'] = EnvHelper::get('SMTP_PASS', '');
+            }
+            
+            EnvHelper::saveSmtpConfig($smtpConfig);
+            $message = 'Configuración SMTP guardada correctamente';
             $messageType = 'success';
             break;
             
@@ -64,10 +122,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $messageType = 'success';
             break;
     }
+    
+    // Recargar configuración del .env
+    EnvHelper::load(dirname(dirname(APP_PATH)) . '/.env');
 }
 
-// Obtener configuración actual
-$smtpConfig = $configModel->getSmtpConfig();
+// Obtener configuración actual desde .env
+$dbConfig = EnvHelper::getDatabaseConfig();
+$smtpConfig = EnvHelper::getSmtpConfig();
 
 include APP_PATH . '/views/partials/header.php';
 include APP_PATH . '/views/partials/admin-tabs.php';
@@ -76,17 +138,71 @@ include APP_PATH . '/views/partials/admin-tabs.php';
 <?php if ($message): ?>
     <div class="alert alert-<?= $messageType ?>">
         <i class="fas fa-<?= $messageType === 'success' ? 'check-circle' : 'exclamation-circle' ?> alert-icon"></i>
-        <div class="alert-content"><?= htmlspecialchars($message) ?></div>
+        <div class="alert-content"><?= $message ?></div>
     </div>
 <?php endif; ?>
 
 <h1 class="mb-4"><i class="fas fa-cog"></i> Configuración</h1>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+    
+    <!-- Configuración de Base de Datos -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title"><i class="fas fa-database"></i> Base de Datos</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="" id="formDatabase">
+                <input type="hidden" name="action" value="save_database" id="db_action">
+                
+                <div class="form-group">
+                    <label class="form-label">Servidor</label>
+                    <input type="text" name="db_host" class="form-control" 
+                           value="<?= htmlspecialchars($dbConfig['host']) ?>" required>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Puerto</label>
+                        <input type="number" name="db_port" class="form-control" 
+                               value="<?= htmlspecialchars($dbConfig['port']) ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Base de datos</label>
+                        <input type="text" name="db_name" class="form-control" 
+                               value="<?= htmlspecialchars($dbConfig['name']) ?>" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" name="db_user" class="form-control" 
+                           value="<?= htmlspecialchars($dbConfig['user']) ?>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" name="db_pass" class="form-control" 
+                           placeholder="<?= empty($dbConfig['pass']) ? 'Sin contraseña' : '••••••••' ?>">
+                    <small class="form-text">Dejar vacío para mantener la actual</small>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="testDatabase()">
+                        <i class="fas fa-plug"></i> Probar Conexión
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Cambiar Contraseña Admin -->
     <div class="card">
         <div class="card-header">
-            <h2 class="card-title"><i class="fas fa-key"></i> Cambiar Contraseña</h2>
+            <h2 class="card-title"><i class="fas fa-key"></i> Cambiar Contraseña Admin</h2>
         </div>
         <div class="card-body">
             <form method="POST" action="">
@@ -109,45 +225,6 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Cambiar Contraseña
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Configuración General -->
-    <div class="card">
-        <div class="card-header">
-            <h2 class="card-title"><i class="fas fa-sliders-h"></i> Configuración General</h2>
-        </div>
-        <div class="card-body">
-            <form method="POST" action="">
-                <input type="hidden" name="action" value="save_general">
-                
-                <div class="form-group">
-                    <label class="form-label">Nombre de la aplicación</label>
-                    <input type="text" name="app_nombre" class="form-control" 
-                           value="<?= htmlspecialchars($configModel->get('app_nombre', 'FrigoTIC')) ?>">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Elementos por página</label>
-                    <select name="items_por_pagina" class="form-control form-select">
-                        <?php foreach ([5, 10, 25, 50] as $opt): ?>
-                            <option value="<?= $opt ?>" <?= $configModel->get('items_por_pagina', 10) == $opt ? 'selected' : '' ?>>
-                                <?= $opt ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Contraseña por defecto (reseteos)</label>
-                    <input type="text" name="password_default" class="form-control" 
-                           value="<?= htmlspecialchars($configModel->get('password_default', 'Cambiar123')) ?>">
-                </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar
                 </button>
             </form>
         </div>
@@ -192,8 +269,8 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 <div class="form-group">
                     <label class="form-label">Contraseña de aplicación</label>
                     <input type="password" name="smtp_password" class="form-control" 
-                           placeholder="Dejar vacío para no cambiar">
-                    <small class="form-text">Ver instrucciones abajo para obtener la contraseña de aplicación de Google.</small>
+                           placeholder="<?= empty($smtpConfig['password']) ? 'Sin configurar' : '••••••••' ?>">
+                    <small class="form-text">Dejar vacío para mantener la actual</small>
                 </div>
                 
                 <div class="form-group">
@@ -204,6 +281,45 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar SMTP
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Configuración General -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title"><i class="fas fa-sliders-h"></i> Configuración General</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="save_general">
+                
+                <div class="form-group">
+                    <label class="form-label">Nombre de la aplicación</label>
+                    <input type="text" name="app_nombre" class="form-control" 
+                           value="<?= htmlspecialchars($configModel->get('app_nombre', 'FrigoTIC')) ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Elementos por página</label>
+                    <select name="items_por_pagina" class="form-control form-select">
+                        <?php foreach ([5, 10, 25, 50] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= $configModel->get('items_por_pagina', 10) == $opt ? 'selected' : '' ?>>
+                                <?= $opt ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contraseña por defecto (reseteos)</label>
+                    <input type="text" name="password_default" class="form-control" 
+                           value="<?= htmlspecialchars($configModel->get('password_default', 'Cambiar123')) ?>">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar
                 </button>
             </form>
         </div>
@@ -229,10 +345,50 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                     <td><?= $_SERVER['SERVER_SOFTWARE'] ?? 'N/A' ?></td>
                 </tr>
                 <tr>
+                    <td><strong>BD Conectada</strong></td>
+                    <td>
+                        <?php
+                        $testResult = EnvHelper::testDatabaseConnection();
+                        if ($testResult['success']) {
+                            echo '<span class="badge badge-success"><i class="fas fa-check"></i> Sí</span>';
+                        } else {
+                            echo '<span class="badge badge-danger"><i class="fas fa-times"></i> No</span>';
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Entorno</strong></td>
+                    <td><?= htmlspecialchars(EnvHelper::get('APP_ENV', 'development')) ?></td>
+                </tr>
+                <tr>
                     <td><strong>Empresa</strong></td>
                     <td>MJCRSoftware</td>
                 </tr>
             </table>
+        </div>
+    </div>
+
+    <!-- Archivo .env -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title"><i class="fas fa-file-code"></i> Archivo .env</h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">
+                La configuración sensible se guarda en el archivo <code>.env</code> 
+                que no se sube al repositorio Git.
+            </p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Ubicación:</strong> <code><?= dirname(dirname(APP_PATH)) ?>/.env</code>
+                </div>
+            </div>
+            <p class="text-muted">
+                En producción, copia <code>.env.example</code> a <code>.env</code> y 
+                configura los valores apropiados para ese entorno.
+            </p>
         </div>
     </div>
 </div>
@@ -261,5 +417,17 @@ include APP_PATH . '/views/partials/admin-tabs.php';
         </div>
     </div>
 </div>
+
+<script>
+function testDatabase() {
+    document.getElementById('db_action').value = 'test_database';
+    document.getElementById('formDatabase').submit();
+}
+
+// Restaurar action después de cargar
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('db_action').value = 'save_database';
+});
+</script>
 
 <?php include APP_PATH . '/views/partials/footer.php'; ?>
