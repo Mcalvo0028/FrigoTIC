@@ -1,0 +1,47 @@
+# Archivos de configuración con datos sensibles
+app/config/database.local.php
+app/config/smtp.local.php
+.env
+
+# Uploads de usuarios (no versionar archivos subidos)
+public/uploads/facturas/*
+public/uploads/productos/*
+!public/uploads/facturas/.gitkeep
+!public/uploads/productos/.gitkeep
+
+# Carpeta de scripts temporales
+Script_Temp/*
+!Script_Temp/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependencias (si se usan en el futuro)
+vendor/
+node_modules/
+
+# Cache
+*.cache
+cache/
+
+# Archivos temporales de PHP
+*.tmp
+
+# Archivos de base de datos locales
+*.sql.bak
+
+# Varios
+temp/

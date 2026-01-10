@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - FrigoTIC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/frigotic/css/style.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-snowflake"></i>
+                </div>
+                <h1 class="login-title">FrigoTIC</h1>
+                <p class="login-subtitle">Gestión del frigorífico compartido</p>
+            </div>
+
+            <?php if (isset($_SESSION['login_error'])): ?>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle alert-icon"></i>
+                    <div class="alert-content">
+                        <?= htmlspecialchars($_SESSION['login_error']) ?>
+                    </div>
+                </div>
+                <?php unset($_SESSION['login_error']); ?>
+            <?php endif; ?>
+
+            <form method="POST" action="/frigotic/login" id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user"></i> Usuario
+                    </label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-control" 
+                        placeholder="Ingresa tu usuario"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Contraseña
+                    </label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-control" 
+                        placeholder="Ingresa tu contraseña"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>&copy; <?= date('Y') ?> MJCRSoftware</p>
+                <p>Versión <?= htmlspecialchars(getAppVersion()) ?></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frigotic/js/app.js"></script>
+</body>
+</html>
