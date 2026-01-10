@@ -54,7 +54,11 @@ spl_autoload_register(function ($class) {
 
 // Router simple
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$uri = str_replace('/frigotic', '', $uri);
+// Eliminar la base del path si existe (por compatibilidad con subdirectorios)
+$scriptName = dirname($_SERVER['SCRIPT_NAME']);
+if ($scriptName !== '/') {
+    $uri = str_replace($scriptName, '', $uri);
+}
 $uri = trim($uri, '/');
 
 // Instanciar controlador de autenticación
@@ -70,7 +74,7 @@ switch ($uri) {
                 jsonResponse($result);
             }
             if ($result['success']) {
-                header('Location: /frigotic/' . $result['redirect']);
+                header('Location: /' . $result['redirect']);
                 exit;
             }
             $_SESSION['login_error'] = $result['message'];
@@ -93,7 +97,7 @@ switch ($uri) {
                 $_SESSION['must_change_password'] = false;
                 setFlash('success', $result['message']);
                 $redirect = $_SESSION['user_role'] === 'admin' ? 'admin/dashboard' : 'user/productos';
-                header('Location: /frigotic/' . $redirect);
+                header('Location: /' . $redirect);
                 exit;
             }
             $_SESSION['change_password_error'] = $result['message'];

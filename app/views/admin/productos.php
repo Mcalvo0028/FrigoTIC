@@ -134,7 +134,7 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-search"></i> Buscar
                 </button>
-                <a href="/frigotic/admin/productos" class="btn btn-secondary">
+                <a href="/admin/productos" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Limpiar
                 </a>
             </div>
@@ -169,7 +169,7 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                             <tr>
                                 <td>
                                     <?php if ($p['imagen']): ?>
-                                        <img src="/frigotic/uploads/productos/<?= htmlspecialchars($p['imagen']) ?>" 
+                                        <img src="/uploads/productos/<?= htmlspecialchars($p['imagen']) ?>" 
                                              alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     <?php else: ?>
                                         <div style="width: 50px; height: 50px; background: var(--color-gray-200); border-radius: 4px; display: flex; align-items: center; justify-content: center;">

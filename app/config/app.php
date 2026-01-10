@@ -18,8 +18,9 @@ return [
     'company' => 'MJCRSoftware',
     'email' => 'frigotic@gmail.com',
     
-    // URLs
-    'base_url' => 'http://localhost/frigotic',
+    // URLs (detecta automáticamente la base URL)
+    'base_url' => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . 
+                  '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'),
     
     // Rutas del sistema
     'paths' => [

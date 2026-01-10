@@ -97,7 +97,7 @@ include APP_PATH . '/views/partials/user-tabs.php';
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-search"></i> Filtrar
                 </button>
-                <a href="/frigotic/user/movimientos" class="btn btn-secondary">
+                <a href="/user/movimientos" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Limpiar
                 </a>
             </div>

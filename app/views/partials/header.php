@@ -18,7 +18,7 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'FrigoTIC') ?> - FrigoTIC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/frigotic/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <?php if (isset($extraCss)): ?>
         <?= $extraCss ?>
     <?php endif; ?>
@@ -33,7 +33,7 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
             </div>
 
             <nav class="header-nav">
-                <a href="/frigotic/ayuda/<?= $isAdmin ? 'admin' : 'usuario' ?>" 
+                <a href="/ayuda/<?= $isAdmin ? 'admin' : 'usuario' ?>" 
                    class="header-link" 
                    onclick="openHelpModal(); return false;">
                     <i class="fas fa-question-circle"></i>
@@ -51,7 +51,7 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
                         <?php endif; ?>
                     </div>
 
-                    <a href="/frigotic/logout" class="header-link">
+                    <a href="/logout" class="header-link">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Cerrar sesión</span>
                     </a>

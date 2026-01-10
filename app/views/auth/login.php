@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - FrigoTIC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/frigotic/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -28,7 +28,7 @@
                 <?php unset($_SESSION['login_error']); ?>
             <?php endif; ?>
 
-            <form method="POST" action="/frigotic/login" id="loginForm">
+            <form method="POST" action="/login" id="loginForm">
                 <div class="form-group">
                     <label for="username" class="form-label">
                         <i class="fas fa-user"></i> Usuario
@@ -70,6 +70,6 @@
         </div>
     </div>
 
-    <script src="/frigotic/js/app.js"></script>
+    <script src="/js/app.js"></script>
 </body>
 </html>

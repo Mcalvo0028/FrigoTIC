@@ -66,7 +66,7 @@ include APP_PATH . '/views/partials/user-tabs.php';
                 <?php foreach ($productos as $producto): ?>
                     <div class="product-card">
                         <?php if ($producto['imagen']): ?>
-                            <img src="/frigotic/uploads/productos/<?= htmlspecialchars($producto['imagen']) ?>" 
+                            <img src="/uploads/productos/<?= htmlspecialchars($producto['imagen']) ?>" 
                                  alt="<?= htmlspecialchars($producto['nombre']) ?>" 
                                  class="product-image">
                         <?php else: ?>
@@ -151,7 +151,7 @@ document.getElementById('confirmBtn').addEventListener('click', async function()
     const cantidad = document.getElementById('cantidad').value;
     
     try {
-        const response = await fetch('/frigotic/api/consumo', {
+        const response = await fetch('/api/consumo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

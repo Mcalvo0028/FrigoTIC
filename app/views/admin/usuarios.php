@@ -123,7 +123,7 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-search"></i> Buscar
                 </button>
-                <a href="/frigotic/admin/usuarios" class="btn btn-secondary">
+                <a href="/admin/usuarios" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Limpiar
                 </a>
             </div>

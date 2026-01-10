@@ -70,7 +70,7 @@ include APP_PATH . '/views/partials/admin-tabs.php';
             <h2 class="card-title">
                 <i class="fas fa-money-bill-wave"></i> Deudas Pendientes
             </h2>
-            <a href="/frigotic/admin/usuarios" class="btn btn-sm btn-secondary">Ver todos</a>
+            <a href="/admin/usuarios" class="btn btn-sm btn-secondary">Ver todos</a>
         </div>
         <div class="card-body">
             <?php 
@@ -114,7 +114,7 @@ include APP_PATH . '/views/partials/admin-tabs.php';
             <h2 class="card-title">
                 <i class="fas fa-exclamation-triangle"></i> Stock Bajo
             </h2>
-            <a href="/frigotic/admin/productos" class="btn btn-sm btn-secondary">Ver todos</a>
+            <a href="/admin/productos" class="btn btn-sm btn-secondary">Ver todos</a>
         </div>
         <div class="card-body">
             <?php if (empty($productosStockBajo)): ?>
@@ -157,16 +157,16 @@ include APP_PATH . '/views/partials/admin-tabs.php';
     </div>
     <div class="card-body">
         <div class="d-flex gap-3 flex-wrap">
-            <a href="/frigotic/admin/usuarios" class="btn btn-primary btn-lg">
+            <a href="/admin/usuarios" class="btn btn-primary btn-lg">
                 <i class="fas fa-user-plus"></i> Nuevo Usuario
             </a>
-            <a href="/frigotic/admin/productos" class="btn btn-primary btn-lg">
+            <a href="/admin/productos" class="btn btn-primary btn-lg">
                 <i class="fas fa-plus-circle"></i> Nuevo Producto
             </a>
-            <a href="/frigotic/admin/facturas" class="btn btn-primary btn-lg">
+            <a href="/admin/facturas" class="btn btn-primary btn-lg">
                 <i class="fas fa-file-upload"></i> Subir Factura
             </a>
-            <a href="/frigotic/admin/graficos" class="btn btn-primary btn-lg">
+            <a href="/admin/graficos" class="btn btn-primary btn-lg">
                 <i class="fas fa-chart-bar"></i> Ver Estadísticas
             </a>
         </div>

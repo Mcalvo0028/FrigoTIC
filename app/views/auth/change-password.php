@@ -9,7 +9,7 @@ $pageTitle = $mustChange ? 'Cambiar Contraseña (Obligatorio)' : 'Cambiar Contra
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> - FrigoTIC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/frigotic/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="login-page <?= $_SESSION['user_role'] === 'admin' ? 'theme-admin' : '' ?>">
     <div class="login-container">
@@ -37,7 +37,7 @@ $pageTitle = $mustChange ? 'Cambiar Contraseña (Obligatorio)' : 'Cambiar Contra
                 <?php unset($_SESSION['change_password_error']); ?>
             <?php endif; ?>
 
-            <form method="POST" action="/frigotic/cambiar-password" id="changePasswordForm">
+            <form method="POST" action="/cambiar-password" id="changePasswordForm">
                 <?php if (!$mustChange): ?>
                     <div class="form-group">
                         <label for="current_password" class="form-label">
@@ -88,7 +88,7 @@ $pageTitle = $mustChange ? 'Cambiar Contraseña (Obligatorio)' : 'Cambiar Contra
 
                 <?php if (!$mustChange): ?>
                     <div class="mt-4 text-center">
-                        <a href="/frigotic/<?= $_SESSION['user_role'] === 'admin' ? 'admin/dashboard' : 'user/productos' ?>" class="text-muted">
+                        <a href="/<?= $_SESSION['user_role'] === 'admin' ? 'admin/dashboard' : 'user/productos' ?>" class="text-muted">
                             <i class="fas fa-arrow-left"></i> Volver
                         </a>
                     </div>
@@ -97,6 +97,6 @@ $pageTitle = $mustChange ? 'Cambiar Contraseña (Obligatorio)' : 'Cambiar Contra
         </div>
     </div>
 
-    <script src="/frigotic/js/app.js"></script>
+    <script src="/js/app.js"></script>
 </body>
 </html>

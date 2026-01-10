@@ -108,7 +108,7 @@ $pageTitle = 'Página no encontrada';
             Parece que te has perdido buscando en el frigorífico. 
             La página que buscas no existe o ha sido movida.
         </p>
-        <a href="/frigotic/" class="btn">
+        <a href="/" class="btn">
             <i class="fas fa-home"></i> Volver al inicio
         </a>
         <div class="fridge-animation">
