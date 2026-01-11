@@ -15,9 +15,11 @@ USE frigotic;
 -- =====================================================
 -- Usuario Administrador por Defecto
 -- Contraseña: admin123 (hasheada con password_hash)
+-- Hash: $2y$10$QbaHdVk19xDWQQ2KUI60qOsYPNzodVbXm2T72deFZm7UE9h.cWoWa
+-- debe_cambiar_password: 1 (obligar cambio en primer login)
 -- =====================================================
 INSERT INTO usuarios (nombre_usuario, password_hash, email, telefono, nombre_completo, rol, debe_cambiar_password, activo) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'frigotic@gmail.com', NULL, 'Administrador', 'admin', 1, 1);
+('admin', '$2y$10$QbaHdVk19xDWQQ2KUI60qOsYPNzodVbXm2T72deFZm7UE9h.cWoWa', 'frigotic@gmail.com', NULL, 'Administrador', 'admin', 1, 1);
 
 -- =====================================================
 -- Configuración Inicial del Sistema
