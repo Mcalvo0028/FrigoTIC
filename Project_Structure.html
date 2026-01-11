@@ -116,22 +116,25 @@
                         </li>
                         <li><span class="folder">📁 database/</span>
                             <ul>
-                                <li><span class="folder">📁 migrations/</span>
-                                    <ul>
-                                        <li><span class="file-sql">📊 001_create_tables.sql</span></li>
-                                    </ul>
-                                </li>
                                 <li><span class="folder">📁 seeds/</span>
                                     <ul>
-                                        <li><span class="file-sql">📊 001_initial_data.sql</span></li>
+                                        <li><span class="file-sql">📊 000_create_database_full.sql</span> - Estructura completa</li>
+                                        <li><span class="file-sql">📊 001_initial_data.sql</span> - Datos iniciales</li>
+                                        <li><span class="file-sql">📊 002_clean_database.sql</span> - Limpiar BD</li>
                                     </ul>
                                 </li>
+                            </ul>
+                        </li>
+                        <li><span class="folder">📁 docs/</span>
+                            <ul>
+                                <li><span class="file">📄 Guia_Despliegue_Produccion.html</span></li>
                             </ul>
                         </li>
                         <li><span class="folder">📁 public/</span>
                             <ul>
                                 <li><span class="file-php">🐘 index.php</span> - Punto de entrada / Router</li>
                                 <li><span class="file-php">🐘 export.php</span> - Exportación PDF</li>
+                                <li><span class="file-php">🐘 download.php</span> - Descarga segura de archivos</li>
                                 <li><span class="folder">📁 css/</span>
                                     <ul>
                                         <li><span class="file-css">🎨 style.css</span></li>
@@ -145,10 +148,16 @@
                                 <li><span class="folder">📁 images/</span></li>
                                 <li><span class="folder">📁 uploads/</span>
                                     <ul>
-                                        <li><span class="folder">📁 productos/</span></li>
-                                        <li><span class="folder">📁 facturas/</span></li>
+                                        <li><span class="folder">📁 productos/</span> - Imágenes de productos (público)</li>
                                     </ul>
                                 </li>
+                            </ul>
+                        </li>
+                        <li><span class="folder">📁 storage/</span> - Archivos sensibles (fuera de acceso web)
+                            <ul>
+                                <li><span class="folder">📁 facturas/</span> - PDFs de facturas (protegido)</li>
+                                <li><span class="folder">📁 reports/</span> - Informes generados (protegido)</li>
+                                <li><span class="file">📄 .htaccess</span> - Bloqueo de acceso directo</li>
                             </ul>
                         </li>
                         <li><span class="folder">📁 docs/</span></li>

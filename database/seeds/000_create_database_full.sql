@@ -1,7 +1,11 @@
 -- =====================================================
--- FrigoTIC - Script de Creación de Base de Datos
--- Versión: 1.0.0
+-- FrigoTIC - Script Completo de Creación de Base de Datos
+-- Versión: 1.1.0
 -- Empresa: MJCRSoftware
+-- Fecha: Enero 2025
+-- =====================================================
+-- Este archivo contiene la estructura COMPLETA y ACTUAL de la BD
+-- Incluye todas las migraciones aplicadas hasta la v1.1.0
 -- =====================================================
 
 -- Crear la base de datos
@@ -15,15 +19,24 @@ USE frigotic;
 -- TABLA: usuarios
 -- Almacena los usuarios del sistema
 -- =====================================================
-CREATE TABLE IF NOT EXISTS usuarios (
+DROP TABLE IF EXISTS sesiones;
+DROP TABLE IF EXISTS movimientos;
+DROP TABLE IF EXISTS facturas;
+DROP TABLE IF EXISTS plantillas_correo;
+DROP TABLE IF EXISTS configuracion;
+DROP TABLE IF EXISTS productos;
+DROP TABLE IF EXISTS usuarios;
+
+CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    telefono VARCHAR(20) NULL COMMENT 'Teléfono de contacto opcional',
     nombre_completo VARCHAR(100),
     rol ENUM('admin', 'user') NOT NULL DEFAULT 'user',
     debe_cambiar_password TINYINT(1) NOT NULL DEFAULT 0,
-    activo TINYINT(1) NOT NULL DEFAULT 1,
+    activo TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Campo deprecado - no se usa',
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ultimo_acceso DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,13 +49,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
 -- TABLA: productos
 -- Almacena los productos del frigorífico
 -- =====================================================
-CREATE TABLE IF NOT EXISTS productos (
+CREATE TABLE productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     precio_compra DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     precio_venta DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     stock INT NOT NULL DEFAULT 0,
+    stock_minimo INT NOT NULL DEFAULT 5 COMMENT 'Umbral de stock bajo configurable por producto',
     imagen VARCHAR(255) NULL,
     activo TINYINT(1) NOT NULL DEFAULT 1,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -55,8 +69,9 @@ CREATE TABLE IF NOT EXISTS productos (
 -- =====================================================
 -- TABLA: movimientos
 -- Registra todos los movimientos de productos
+-- Tipos: consumo, pago, ajuste, reposicion
 -- =====================================================
-CREATE TABLE IF NOT EXISTS movimientos (
+CREATE TABLE movimientos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     producto_id INT NULL,
@@ -79,7 +94,7 @@ CREATE TABLE IF NOT EXISTS movimientos (
 -- TABLA: facturas
 -- Almacena las facturas de compra (PDFs)
 -- =====================================================
-CREATE TABLE IF NOT EXISTS facturas (
+CREATE TABLE facturas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_archivo VARCHAR(255) NOT NULL,
     nombre_original VARCHAR(255) NOT NULL,
@@ -100,7 +115,7 @@ CREATE TABLE IF NOT EXISTS facturas (
 -- TABLA: configuracion
 -- Almacena configuraciones del sistema
 -- =====================================================
-CREATE TABLE IF NOT EXISTS configuracion (
+CREATE TABLE configuracion (
     id INT AUTO_INCREMENT PRIMARY KEY,
     clave VARCHAR(100) NOT NULL UNIQUE,
     valor TEXT NULL,
@@ -114,7 +129,7 @@ CREATE TABLE IF NOT EXISTS configuracion (
 -- TABLA: plantillas_correo
 -- Almacena plantillas de correos electrónicos
 -- =====================================================
-CREATE TABLE IF NOT EXISTS plantillas_correo (
+CREATE TABLE plantillas_correo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo VARCHAR(50) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
@@ -130,7 +145,7 @@ CREATE TABLE IF NOT EXISTS plantillas_correo (
 -- TABLA: sesiones
 -- Control de sesiones activas
 -- =====================================================
-CREATE TABLE IF NOT EXISTS sesiones (
+CREATE TABLE sesiones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     token VARCHAR(255) NOT NULL UNIQUE,
@@ -142,3 +157,8 @@ CREATE TABLE IF NOT EXISTS sesiones (
     INDEX idx_token (token),
     INDEX idx_usuario (usuario_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- Mensaje de confirmación
+-- =====================================================
+SELECT '✅ Base de datos frigotic creada correctamente con estructura v1.1.0' AS mensaje;

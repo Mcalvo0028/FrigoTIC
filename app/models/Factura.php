@@ -18,7 +18,8 @@ class Factura
     public function __construct()
     {
         $this->db = Database::getInstance();
-        $this->uploadPath = dirname(__DIR__, 2) . '/public/uploads/facturas/';
+        // Ruta segura fuera de public
+        $this->uploadPath = dirname(__DIR__, 2) . '/storage/facturas/';
     }
 
     /**
@@ -125,7 +126,7 @@ class Factura
         return $this->db->insert($this->table, [
             'nombre_archivo' => $nombreArchivo,
             'nombre_original' => $file['name'],
-            'ruta_archivo' => 'uploads/facturas/' . $nombreArchivo,
+            'ruta_archivo' => 'storage/facturas/' . $nombreArchivo,
             'tamano' => $file['size'],
             'descripcion' => $data['descripcion'] ?? null,
             'fecha_factura' => $data['fecha_factura'] ?? null,
@@ -158,8 +159,8 @@ class Factura
             return false;
         }
 
-        // Eliminar archivo físico
-        $rutaArchivo = dirname(__DIR__, 2) . '/public/' . $factura['ruta_archivo'];
+        // Eliminar archivo físico (ruta segura en storage)
+        $rutaArchivo = dirname(__DIR__, 2) . '/' . $factura['ruta_archivo'];
         if (file_exists($rutaArchivo)) {
             unlink($rutaArchivo);
         }
@@ -178,7 +179,8 @@ class Factura
             return null;
         }
 
-        $ruta = dirname(__DIR__, 2) . '/public/' . $factura['ruta_archivo'];
+        // Ruta segura en storage
+        $ruta = dirname(__DIR__, 2) . '/' . $factura['ruta_archivo'];
         return file_exists($ruta) ? $ruta : null;
     }
 

@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrigoTIC - Guía de Despliegue a Producción</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #0199ff 0%, #d1e9f6 100%);
+            color: #1e3a5f;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 3px solid #dc2626;
+            margin-bottom: 3rem;
+            background: #b9f2f7;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 { 
+            color: #dc2626; 
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .version {
+            background: #dc2626;
+            color: #b9f2f7;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        
+        .header p { 
+            color: #64748b; 
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Índice */
+        .toc {
+            background: #b9f2f7;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid #2563eb;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .toc h2 {
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        
+        .toc li {
+            counter-increment: toc-counter;
+            margin: 0.8rem 0;
+        }
+        
+        .toc li::before {
+            content: counter(toc-counter);
+            background: #2563eb;
+            color: #b9f2f7;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        .toc a {
+            color: #1d4ed8;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        
+        /* Secciones */
+        .section {
+            background: #b9f2f7;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #10b981;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section h2 .step-number {
+            background: #10b981;
+            color: #b9f2f7;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .section h3 {
+            color: #d97706;
+            margin: 1.5rem 0 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+        
+        /* Listas */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: #374151;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        /* Código */
+        code {
+            background: #f1f5f9;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #be185d;
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            background: #1e293b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #334155;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+        }
+        
+        .code-title {
+            background: #334155;
+            color: #94a3b8;
+            padding: 0.5rem 1rem;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.85rem;
+            margin-bottom: -1rem;
+            font-family: 'Consolas', monospace;
+        }
+        
+        /* Alertas */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+        }
+        
+        .alert-warning .alert-icon { color: #f59e0b; }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid #3b82f6;
+        }
+        
+        .alert-info .alert-icon { color: #3b82f6; }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+        }
+        
+        .alert-success .alert-icon { color: #10b981; }
+        
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+        }
+        
+        .alert-danger .alert-icon { color: #ef4444; }
+        
+        /* Links externos */
+        .external-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: #b9f2f7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 500;
+        }
+        
+        .external-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        
+        .external-link.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .external-link.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .external-link.red {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+        
+        /* Tabla de requisitos */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            color: #374151;
+        }
+        
+        th {
+            background: #1e3a5f;
+            color: #b9f2f7;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Checklist */
+        .checklist {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #374151;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #10b981;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            background: #b9f2f7;
+        }
+        
+        .checkbox:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Estructura de carpetas */
+        .folder-structure {
+            background: #1e293b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+        
+        .folder-structure .folder { color: #fbbf24; }
+        .folder-structure .file { color: #c4b5fd; }
+        .folder-structure .important { color: #34d399; font-weight: bold; }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #cbd5e1;
+            color: #64748b;
+            background: #b9f2f7;
+            border-radius: 12px;
+        }
+        
+        .footer strong { color: #dc2626; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .section { padding: 1.5rem; }
+            pre { font-size: 0.8rem; }
+        }
+        
+        /* Animaciones suaves */
+        .section {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧊 FrigoTIC</h1>
+            <span class="version">v1.1.0</span>
+            <p>Guía Completa de Despliegue a Producción</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Desarrollado por MJCRSoftware</p>
+        </div>
+
+        <!-- Índice -->
+        <div class="toc">
+            <h2>📑 Índice de Contenidos</h2>
+            <ol>
+                <li><a href="#requisitos">Requisitos del Sistema</a></li>
+                <li><a href="#xampp">Instalar Laragon</a></li>
+                <li><a href="#archivos">Copiar Archivos del Proyecto</a></li>
+                <li><a href="#mysql">Configurar MySQL</a></li>
+                <li><a href="#base-datos">Crear la Base de Datos</a></li>
+                <li><a href="#env">Configurar Archivo .env</a></li>
+                <li><a href="#virtualhost">Configurar Dominio frigotic.es</a></li>
+                <li><a href="#permisos">Configurar Permisos de Carpetas</a></li>
+                <li><a href="#smtp">Configurar Correo SMTP</a></li>
+                <li><a href="#verificacion">Verificación Final</a></li>
+                <li><a href="#checklist">Checklist de Producción</a></li>
+                <li><a href="#fallos">Fallos Comunes y Soluciones</a></li>
+                <li><a href="#seguridad">Consideraciones de Seguridad</a></li>
+            </ol>
+        </div>
+
+        <!-- Paso 1: Requisitos -->
+        <div class="section" id="requisitos">
+            <h2><span class="step-number">1</span> Requisitos del Sistema</h2>
+            
+            <p>Antes de comenzar, asegúrate de que el equipo de producción cumple con estos requisitos mínimos:</p>
+            
+            <table>
+                <tr>
+                    <th>Componente</th>
+                    <th>Versión Mínima</th>
+                    <th>Recomendado</th>
+                </tr>
+                <tr>
+                    <td>Sistema Operativo</td>
+                    <td>Windows 10</td>
+                    <td>Windows 10/11</td>
+                </tr>
+                <tr>
+                    <td>PHP</td>
+                    <td>8.0</td>
+                    <td>8.2+</td>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>5.7</td>
+                    <td>8.0+</td>
+                </tr>
+                <tr>
+                    <td>Apache</td>
+                    <td>2.4</td>
+                    <td>2.4+</td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td>2 GB</td>
+                    <td>4 GB+</td>
+                </tr>
+                <tr>
+                    <td>Espacio en disco</td>
+                    <td>500 MB</td>
+                    <td>1 GB+</td>
+                </tr>
+            </table>
+
+            <h3>Extensiones PHP necesarias:</h3>
+            <ul>
+                <li><code>pdo_mysql</code> - Conexión a MySQL</li>
+                <li><code>mbstring</code> - Manejo de caracteres UTF-8</li>
+                <li><code>openssl</code> - Para conexiones SMTP seguras</li>
+                <li><code>fileinfo</code> - Validación de tipos de archivo</li>
+                <li><code>gd</code> - Procesamiento de imágenes (opcional)</li>
+            </ul>
+        </div>
+
+        <!-- Paso 2: Instalar Laragon -->
+        <div class="section" id="xampp">
+            <h2><span class="step-number">2</span> Instalar Laragon</h2>
+            
+            <p>Laragon es un entorno de desarrollo local que incluye <strong>PHP, MySQL, Apache y phpMyAdmin</strong> pre-configurados y listos para usar.</p>
+            
+            <p>
+                <a href="https://laragon.org/download/" target="_blank" class="external-link green">
+                    ⬇️ Descargar Laragon
+                </a>
+            </p>
+            
+            <h3>Instalación paso a paso</h3>
+            <ol>
+                <li>Descarga la versión <strong>Full</strong> (incluye PHP 8.x y MySQL 8)</li>
+                <li>Ejecuta el instalador <code>laragon-wamp.exe</code></li>
+                <li>Instala en <code>C:\laragon</code> (ruta por defecto recomendada)</li>
+                <li>Sigue el asistente con las opciones por defecto</li>
+                <li>Una vez instalado, abre Laragon</li>
+                <li>Haz clic en <strong>"Start All"</strong> (botón grande verde)</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                <div>
+                    <strong>Verificar instalación:</strong> Abre un navegador y visita <code>http://localhost</code>. 
+                    Deberías ver la página de bienvenida de Laragon.
+                </div>
+            </div>
+
+            <h3>¿Qué incluye Laragon?</h3>
+            <table>
+                <tr>
+                    <th>Componente</th>
+                    <th>Versión</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td>PHP</td>
+                    <td>8.2+</td>
+                    <td>Lenguaje de programación</td>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>8.0+</td>
+                    <td>Base de datos</td>
+                </tr>
+                <tr>
+                    <td>Apache</td>
+                    <td>2.4+</td>
+                    <td>Servidor web</td>
+                </tr>
+                <tr>
+                    <td>phpMyAdmin</td>
+                    <td>✔️</td>
+                    <td>Gestión de MySQL desde web</td>
+                </tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <strong>Acceso rápido:</strong> Clic derecho en Laragon → <strong>www</strong> abre la carpeta de proyectos. 
+                    Clic derecho → <strong>Database</strong> → <strong>phpMyAdmin</strong> abre la gestión de MySQL.
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 3: Copiar archivos -->
+        <div class="section" id="archivos">
+            <h2><span class="step-number">3</span> Copiar Archivos del Proyecto</h2>
+            
+            <h3>Descargar desde GitHub</h3>
+            <p>
+                <a href="https://github.com/Mcalvo0028/FrigoTIC" target="_blank" class="external-link">
+                    📦 Ir al Repositorio en GitHub
+                </a>
+            </p>
+            
+            <ol>
+                <li>Ve a <a href="https://github.com/Mcalvo0028/FrigoTIC" target="_blank">https://github.com/Mcalvo0028/FrigoTIC</a></li>
+                <li>Clic en el botón verde <strong>"Code"</strong></li>
+                <li>Clic en <strong>"Download ZIP"</strong></li>
+                <li>Extrae el contenido del ZIP</li>
+                <li>Renombra la carpeta extraída a <strong>FrigoTIC</strong> (sin el "-main")</li>
+                <li>Mueve la carpeta a <code>C:\FrigoTIC</code></li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>Importante:</strong> La ruta final debe ser exactamente <code>C:\FrigoTIC</code> 
+                    (no <code>C:\FrigoTIC-main</code> ni <code>C:\FrigoTIC\FrigoTIC</code>)
+                </div>
+            </div>
+
+            <h3>Estructura final de carpetas:</h3>
+            <div class="folder-structure">
+<span class="folder">📁 C:\FrigoTIC\</span>
+├── <span class="folder">📁 app\</span>
+│   ├── <span class="folder">📁 config\</span>
+│   ├── <span class="folder">📁 controllers\</span>
+│   ├── <span class="folder">📁 helpers\</span>
+│   ├── <span class="folder">📁 models\</span>
+│   └── <span class="folder">📁 views\</span>
+├── <span class="folder">📁 database\</span>
+│   └── <span class="folder">📁 seeds\</span>
+│       ├── <span class="important">📄 000_create_database_full.sql</span>
+│       ├── <span class="important">📄 001_initial_data.sql</span>
+│       └── <span class="file">📄 002_clean_database.sql</span>
+├── <span class="folder">📁 public\</span> ← Carpeta raíz del servidor web
+│   ├── <span class="file">📄 index.php</span>
+│   ├── <span class="folder">📁 css\</span>
+│   ├── <span class="folder">📁 js\</span>
+│   └── <span class="folder">📁 uploads\</span>
+├── <span class="folder">📁 storage\</span> ← Archivos sensibles (facturas, reports)
+├── <span class="important">📄 .env.example</span> ← Copiar a .env
+└── <span class="file">📄 README.md</span>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <strong>Nota:</strong> El servidor web debe apuntar a la carpeta <code>C:\FrigoTIC\public</code>, 
+                    no a <code>C:\FrigoTIC</code>. Esto es por seguridad.
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 4: Configurar MySQL -->
+        <div class="section" id="mysql">
+            <h2><span class="step-number">4</span> Configurar MySQL</h2>
+            
+            <h3>Acceder a phpMyAdmin</h3>
+            <p>phpMyAdmin es una herramienta web para gestionar MySQL de forma visual.</p>
+            <ul>
+                <li><strong>Laragon:</strong> Clic derecho en el icono → <strong>Database</strong> → <strong>phpMyAdmin</strong></li>
+                <li>O directamente: <a href="http://localhost/phpmyadmin" target="_blank">http://localhost/phpmyadmin</a></li>
+            </ul>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>Credenciales por defecto en Laragon:</strong>
+                    <ul>
+                        <li>Usuario: <code>root</code></li>
+                        <li>Contraseña: <code>(vacía)</code></li>
+                    </ul>
+                    Esto es inseguro. Cambiaremos la contraseña en los siguientes pasos.
+                </div>
+            </div>
+
+            <h3>Paso 1: Poner contraseña al usuario root (Seguridad)</h3>
+            <p>Por seguridad, el usuario <code>root</code> debe tener contraseña.</p>
+            
+            <ol>
+                <li>Abre phpMyAdmin</li>
+                <li>Ve a la pestaña <strong>"SQL"</strong> (arriba)</li>
+                <li>Copia y pega el siguiente comando:</li>
+            </ol>
+
+            <div class="code-title">SQL - Cambiar contraseña de root</div>
+            <pre><code>-- Cambiar contraseña del usuario root
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'TuContraseNaSegura2025!';
+FLUSH PRIVILEGES;</code></pre>
+
+            <ol start="4">
+                <li>Clic en <strong>"Ejecutar"</strong></li>
+                <li>Cierra phpMyAdmin</li>
+                <li>Vuelve a abrir phpMyAdmin (te pedirá la nueva contraseña)</li>
+            </ol>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">🔒</span>
+                <div>
+                    <strong>Importante:</strong> Sustituye <code>TuContraseNaSegura2025!</code> por una contraseña fuerte. 
+                    <strong>Anota esta contraseña</strong>, la necesitarás para el archivo .env.
+                </div>
+            </div>
+
+            <h3>Paso 2: Crear usuario específico para FrigoTIC</h3>
+            <p>Es mejor crear un usuario dedicado en lugar de usar <code>root</code> directamente.</p>
+            
+            <div class="code-title">SQL - Crear usuario frigotic_user</div>
+            <pre><code>-- Crear usuario para FrigoTIC
+CREATE USER 'frigotic_user'@'localhost' IDENTIFIED BY 'Frigotic2025!Pass';
+
+-- Dar permisos SOLO sobre la base de datos frigotic
+GRANT ALL PRIVILEGES ON frigotic.* TO 'frigotic_user'@'localhost';
+
+-- Aplicar cambios
+FLUSH PRIVILEGES;
+
+-- Verificar que el usuario se creó correctamente
+SELECT User, Host FROM mysql.user WHERE User='frigotic_user';</code></pre>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                <div>
+                    <strong>Resultado esperado:</strong> Deberías ver una fila con <code>frigotic_user | localhost</code>
+                </div>
+            </div>
+
+            <h3>Paso 3: Probar la conexión del nuevo usuario</h3>
+            <ol>
+                <li>Cierra sesión en phpMyAdmin (icono de salir arriba a la derecha)</li>
+                <li>Vuelve a entrar con:</li>
+            </ol>
+            <table>
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+                <tr>
+                    <td>Usuario</td>
+                    <td><code>frigotic_user</code></td>
+                </tr>
+                <tr>
+                    <td>Contraseña</td>
+                    <td><code>Frigotic2025!Pass</code></td>
+                </tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <strong>Tip:</strong> Guarda estas credenciales. Las usarás en el archivo <code>.env</code> de FrigoTIC.
+                </div>
+            </div>
+
+            <h3>Resumen de credenciales</h3>
+            <table>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Contraseña</th>
+                    <th>Uso</th>
+                </tr>
+                <tr>
+                    <td><code>root</code></td>
+                    <td>Tu contraseña segura</td>
+                    <td>Administración general de MySQL</td>
+                </tr>
+                <tr>
+                    <td><code>frigotic_user</code></td>
+                    <td>Frigotic2025!Pass</td>
+                    <td>Solo para la aplicación FrigoTIC</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Paso 5: Crear Base de Datos -->
+        <div class="section" id="base-datos">
+            <h2><span class="step-number">5</span> Crear la Base de Datos</h2>
+            
+            <h3>Método 1: Usando phpMyAdmin (Visual)</h3>
+            <ol>
+                <li>Abre phpMyAdmin (<a href="http://localhost/phpmyadmin" target="_blank">http://localhost/phpmyadmin</a>)</li>
+                <li>Ve a la pestaña <strong>"SQL"</strong></li>
+                <li>Copia y pega el contenido de <code>database/seeds/000_create_database_full.sql</code></li>
+                <li>Clic en <strong>"Ejecutar"</strong></li>
+                <li>Repite con <code>database/seeds/001_initial_data.sql</code></li>
+            </ol>
+
+            <h3>Método 2: Desde línea de comandos</h3>
+            <div class="code-title">CMD o PowerShell</div>
+            <pre><code># Si tienes MySQL en el PATH:
+mysql -u root -p < C:\FrigoTIC\database\seeds\000_create_database_full.sql
+mysql -u root -p < C:\FrigoTIC\database\seeds\001_initial_data.sql
+
+# O especificando la ruta de MySQL:
+"C:\laragon\bin\mysql\mysql-8.0.30-winx64\bin\mysql.exe" -u root -p < C:\FrigoTIC\database\seeds\000_create_database_full.sql</code></pre>
+
+            <h3>Verificar instalación</h3>
+            <p>En phpMyAdmin, deberías ver:</p>
+            <ul>
+                <li>Base de datos: <code>frigotic</code></li>
+                <li>Tablas: usuarios, productos, movimientos, facturas, configuracion, plantillas_correo, sesiones</li>
+                <li>Usuario admin creado (contraseña: <code>admin123</code>)</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                <div>
+                    <strong>Verificación:</strong> Ejecuta <code>SELECT * FROM usuarios;</code> en phpMyAdmin.
+                    Deberías ver el usuario <strong>admin</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 6: Configurar .env -->
+        <div class="section" id="env">
+            <h2><span class="step-number">6</span> Configurar Archivo .env</h2>
+            
+            <p>El archivo <code>.env</code> contiene todas las configuraciones sensibles de la aplicación.</p>
+
+            <h3>Crear el archivo .env</h3>
+            <ol>
+                <li>Ve a la carpeta raíz del proyecto (<code>C:\FrigoTIC</code>)</li>
+                <li>Copia el archivo <code>.env.example</code></li>
+                <li>Renómbralo a <code>.env</code></li>
+                <li>Ábrelo con un editor de texto (Notepad++, VS Code)</li>
+            </ol>
+
+            <h3>Contenido del archivo .env</h3>
+            <div class="code-title">.env - Configuración de Producción</div>
+            <pre><code># =====================================================
+# FrigoTIC - Configuración de Producción
+# =====================================================
+
+# Base de Datos
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=frigotic
+DB_USER=frigotic_user
+DB_PASS=Frigotic2025!Pass
+
+# SMTP (Correo electrónico)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USER=tucorreo@gmail.com
+SMTP_PASS=xxxx xxxx xxxx xxxx
+SMTP_FROM_NAME=FrigoTIC
+
+# Aplicación
+APP_NAME=FrigoTIC
+APP_ENV=production
+APP_DEBUG=false</code></pre>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">🔐</span>
+                <div>
+                    <strong>NUNCA</strong> subas el archivo <code>.env</code> a Git ni lo compartas. 
+                    Contiene contraseñas y datos sensibles.
+                </div>
+            </div>
+
+            <h3>Variables importantes:</h3>
+            <table>
+                <tr>
+                    <th>Variable</th>
+                    <th>Descripción</th>
+                    <th>Tu valor</th>
+                </tr>
+                <tr>
+                    <td><code>DB_HOST</code></td>
+                    <td>Servidor de MySQL</td>
+                    <td>localhost</td>
+                </tr>
+                <tr>
+                    <td><code>DB_PORT</code></td>
+                    <td>Puerto de MySQL</td>
+                    <td>3306</td>
+                </tr>
+                <tr>
+                    <td><code>DB_USER</code></td>
+                    <td>Usuario de MySQL</td>
+                    <td>frigotic_user</td>
+                </tr>
+                <tr>
+                    <td><code>DB_PASS</code></td>
+                    <td>Contraseña de MySQL</td>
+                    <td>La que creaste en el Paso 4</td>
+                </tr>
+                <tr>
+                    <td><code>APP_DEBUG</code></td>
+                    <td>Modo debug (false en producción)</td>
+                    <td>false</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Paso 7: Virtual Host -->
+        <div class="section" id="virtualhost">
+            <h2><span class="step-number">7</span> Configurar Dominio frigotic.es</h2>
+            
+            <p>Configura el dominio <strong>frigotic.es</strong> para acceder a FrigoTIC de forma profesional.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <strong>Nota:</strong> Este dominio solo funcionará en la red local (intranet). 
+                    No es un dominio real de Internet, sino una configuración local que "engaña" al navegador 
+                    para que dirija frigotic.es a tu servidor local.
+                </div>
+            </div>
+
+            <h3>Paso 1: Editar archivo hosts de Windows</h3>
+            <p>Este paso es <strong>obligatorio</strong> tanto para Laragon como para XAMPP.</p>
+            
+            <div class="code-title">Abrir como Administrador: C:\Windows\System32\drivers\etc\hosts</div>
+            <pre><code># Clic derecho en Notepad → "Ejecutar como administrador"
+# Archivo → Abrir → C:\Windows\System32\drivers\etc\hosts
+# (Cambiar filtro a "Todos los archivos")
+
+# Añadir al final del archivo:
+127.0.0.1    frigotic.es
+127.0.0.1    www.frigotic.es</code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>Importante:</strong> Si no puedes guardar el archivo, asegúrate de:
+                    <ul>
+                        <li>Abrir el editor como Administrador</li>
+                        <li>Desactivar temporalmente el antivirus si bloquea la edición</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Paso 2: Configurar Apache en Laragon</h3>
+            
+            <ol>
+                <li>Abre Laragon</li>
+                <li>Menú → <strong>Apache</strong> → <strong>sites-enabled</strong> → Abrir carpeta</li>
+                <li>Crea un nuevo archivo llamado <strong>frigotic.es.conf</strong></li>
+                <li>Copia el siguiente contenido:</li>
+            </ol>
+
+            <div class="code-title">Archivo: C:\laragon\etc\apache2\sites-enabled\frigotic.es.conf</div>
+            <pre><code>&lt;VirtualHost *:80&gt;
+    DocumentRoot "C:/FrigoTIC/public"
+    ServerName frigotic.es
+    ServerAlias www.frigotic.es
+    
+    &lt;Directory "C:/FrigoTIC/public"&gt;
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+    
+    # Logs (opcional)
+    ErrorLog "C:/laragon/logs/frigotic-error.log"
+    CustomLog "C:/laragon/logs/frigotic-access.log" combined
+&lt;/VirtualHost&gt;</code></pre>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <strong>Explicación:</strong>
+                    <ul>
+                        <li><code>DocumentRoot</code>: Carpeta donde está la web (siempre apuntar a <code>/public</code>)</li>
+                        <li><code>ServerName</code>: El dominio que escribirás en el navegador</li>
+                        <li><code>Directory</code>: Permisos de acceso a esa carpeta</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-title">Reiniciar Apache en Laragon</div>
+            <pre><code># Clic derecho en Laragon → Apache → Reload
+# O: Clic en "Stop All" y luego "Start All"</code></pre>
+
+            <h3>Paso 3: Verificar configuración</h3>
+            <p>Abre tu navegador y visita:</p>
+            <ul>
+                <li><code>http://frigotic.es</code></li>
+                <li><code>http://www.frigotic.es</code></li>
+            </ul>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                <div>
+                    Si ves la página de login de FrigoTIC, ¡la configuración está correcta!
+                </div>
+            </div>
+
+            <h3>Configurar en otros equipos de la red (Opcional)</h3>
+            <p>Para que otros ordenadores de la intranet accedan a <code>http://frigotic.es</code>:</p>
+            
+            <div class="code-title">En cada equipo cliente, editar hosts:</div>
+            <pre><code># Archivo: C:\Windows\System32\drivers\etc\hosts
+# Añadir (cambiar IP por la del servidor):
+
+192.168.1.100    frigotic.es
+192.168.1.100    www.frigotic.es</code></pre>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <strong>Tip:</strong> Sustituye <code>192.168.1.100</code> por la IP real del servidor. 
+                    Para conocerla, ejecuta <code>ipconfig</code> en el servidor y busca "Dirección IPv4".
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 8: Permisos -->
+        <div class="section" id="permisos">
+            <h2><span class="step-number">8</span> Configurar Permisos de Carpetas</h2>
+            
+            <p>Algunas carpetas necesitan permisos de escritura para subir archivos:</p>
+
+            <h3>Carpetas que necesitan permisos de escritura:</h3>
+            <ul>
+                <li><code>storage/facturas/</code> - Almacena facturas PDF</li>
+                <li><code>storage/reports/</code> - Almacena informes generados</li>
+                <li><code>public/uploads/productos/</code> - Imágenes de productos</li>
+            </ul>
+
+            <div class="code-title">PowerShell (como Administrador)</div>
+            <pre><code># Crear carpetas si no existen y verificar permisos
+$folders = @(
+    "C:\FrigoTIC\storage\facturas",
+    "C:\FrigoTIC\storage\reports", 
+    "C:\FrigoTIC\public\uploads\productos"
+)
+
+foreach ($folder in $folders) {
+    if (!(Test-Path $folder)) {
+        New-Item -ItemType Directory -Path $folder -Force
+        Write-Host "Carpeta creada: $folder" -ForegroundColor Green
+    } else {
+        Write-Host "Carpeta existe: $folder" -ForegroundColor Cyan
+    }
+}</code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>En Windows:</strong> Generalmente no necesitas cambiar permisos si el servidor web 
+                    (Apache) tiene acceso a la carpeta. Si hay problemas, verifica que el usuario del servicio 
+                    Apache tenga permisos de escritura.
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 9: SMTP -->
+        <div class="section" id="smtp">
+            <h2><span class="step-number">9</span> Configurar Correo SMTP</h2>
+            
+            <p>Para que FrigoTIC pueda enviar correos (bienvenida, reseteo de contraseña, etc.), 
+            necesitas configurar un servidor SMTP.</p>
+
+            <h3>Opción recomendada: Gmail</h3>
+            
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>Importante:</strong> Gmail no permite usar tu contraseña normal. 
+                    Debes crear una <strong>"Contraseña de aplicación"</strong>.
+                </div>
+            </div>
+
+            <h3>Pasos para configurar Gmail:</h3>
+            <ol>
+                <li>
+                    <strong>Activar verificación en 2 pasos:</strong>
+                    <br>
+                    <a href="https://myaccount.google.com/security" target="_blank" class="external-link">
+                        🔐 Ir a Seguridad de Google
+                    </a>
+                    <br>
+                    Ve a "Verificación en dos pasos" y actívala
+                </li>
+                <li>
+                    <strong>Crear contraseña de aplicación:</strong>
+                    <br>
+                    <a href="https://myaccount.google.com/apppasswords" target="_blank" class="external-link green">
+                        🔑 Crear Contraseña de Aplicación
+                    </a>
+                    <br>
+                    <ul>
+                        <li>Selecciona app: <strong>Correo</strong></li>
+                        <li>Selecciona dispositivo: <strong>Ordenador Windows</strong></li>
+                        <li>Clic en <strong>Generar</strong></li>
+                        <li>Copia la contraseña de 16 caracteres (ej: <code>abcd efgh ijkl mnop</code>)</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Actualizar .env:</strong>
+                    <pre><code>SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USER=tucorreo@gmail.com
+SMTP_PASS=abcd efgh ijkl mnop
+SMTP_FROM_NAME=FrigoTIC</code></pre>
+                </li>
+            </ol>
+
+            <h3>Alternativas a Gmail:</h3>
+            <table>
+                <tr>
+                    <th>Proveedor</th>
+                    <th>Host</th>
+                    <th>Puerto</th>
+                    <th>Notas</th>
+                </tr>
+                <tr>
+                    <td>Gmail</td>
+                    <td>smtp.gmail.com</td>
+                    <td>587 (TLS)</td>
+                    <td>Requiere App Password</td>
+                </tr>
+                <tr>
+                    <td>Outlook/Hotmail</td>
+                    <td>smtp-mail.outlook.com</td>
+                    <td>587 (TLS)</td>
+                    <td>Cuenta Microsoft</td>
+                </tr>
+                <tr>
+                    <td>SendGrid</td>
+                    <td>smtp.sendgrid.net</td>
+                    <td>587</td>
+                    <td>100 emails/día gratis</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Paso 10: Verificación -->
+        <div class="section" id="verificacion">
+            <h2><span class="step-number">10</span> Verificación Final</h2>
+            
+            <h3>1. Acceder a la aplicación</h3>
+            <p>Abre tu navegador y visita:</p>
+            <ul>
+                <li><code>http://frigotic.es</code> (Recomendado - con Virtual Host configurado)</li>
+                <li><code>http://www.frigotic.es</code> (Alternativa con www)</li>
+                <li><code>http://localhost/FrigoTIC/public/</code> (Sin Virtual Host)</li>
+            </ul>
+
+            <h3>2. Iniciar sesión</h3>
+            <table>
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+                <tr>
+                    <td>Usuario</td>
+                    <td><code>admin</code></td>
+                </tr>
+                <tr>
+                    <td>Contraseña</td>
+                    <td><code>admin123</code></td>
+                </tr>
+            </table>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">🔒</span>
+                <div>
+                    <strong>¡IMPORTANTE!</strong> Cambia la contraseña del administrador inmediatamente después del primer inicio de sesión.
+                    El sistema te obligará a hacerlo.
+                </div>
+            </div>
+
+            <h3>3. Verificar funcionalidades</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Login funciona correctamente</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Se puede cambiar la contraseña</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Dashboard muestra datos correctamente</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Se pueden crear productos con imágenes</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Se pueden subir facturas PDF</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Exportar PDF funciona en todas las secciones</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Envío de correos funciona (probar crear usuario)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Final -->
+        <div class="section" id="checklist">
+            <h2><span class="step-number">✓</span> Checklist de Producción</h2>
+            
+            <p>Antes de considerar el despliegue completo, verifica estos puntos:</p>
+
+            <h3>🔒 Seguridad</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Contraseña de admin cambiada</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Usuario MySQL específico creado (no usar root)</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>APP_DEBUG=false en .env</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Archivo .env no accesible desde web</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Carpeta storage/ protegida con .htaccess</span>
+                </div>
+            </div>
+
+            <h3>📁 Archivos</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Carpeta storage/facturas/ existe y tiene permisos</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Carpeta storage/reports/ existe y tiene permisos</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Carpeta public/uploads/productos/ existe y tiene permisos</span>
+                </div>
+            </div>
+
+            <h3>🗄️ Base de Datos</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Base de datos frigotic creada</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Todas las tablas creadas (7 tablas)</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Datos iniciales insertados</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Backup de base de datos configurado</span>
+                </div>
+            </div>
+
+            <h3>📧 Correo</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>SMTP configurado en .env</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Contraseña de aplicación generada (Gmail)</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Probado envío de correo de prueba</span>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">🎉</span>
+                <div>
+                    <strong>¡Felicidades!</strong> Si todos los puntos están marcados, tu instalación de 
+                    FrigoTIC está lista para producción.
+                </div>
+            </div>
+        </div>
+
+        <!-- Solución de problemas -->
+        <div class="section">
+            <h2>🔧 Solución de Problemas Comunes</h2>
+            
+            <h3>Error: "No se puede conectar a la base de datos"</h3>
+            <ul>
+                <li>Verifica que MySQL está corriendo</li>
+                <li>Comprueba los datos en el archivo .env</li>
+                <li>Verifica que el usuario tiene permisos sobre la base de datos</li>
+            </ul>
+
+            <h3>Error: "Página en blanco"</h3>
+            <ul>
+                <li>Revisa los logs de Apache/PHP</li>
+                <li>Activa temporalmente APP_DEBUG=true para ver errores</li>
+                <li>Verifica que las extensiones PHP necesarias están instaladas</li>
+            </ul>
+
+            <h3>Error: "No se pueden subir archivos"</h3>
+            <ul>
+                <li>Verifica permisos de escritura en las carpetas uploads/ y storage/</li>
+                <li>Comprueba el tamaño máximo de upload en php.ini (<code>upload_max_filesize</code>)</li>
+            </ul>
+
+            <h3>Error: "No se envían correos"</h3>
+            <ul>
+                <li>Verifica la configuración SMTP en .env</li>
+                <li>Para Gmail: asegúrate de usar una contraseña de aplicación</li>
+                <li>Comprueba que la extensión openssl está habilitada en PHP</li>
+            </ul>
+        </div>
+
+        <!-- Fallos Comunes y Soluciones -->
+        <div class="section" id="fallos">
+            <h2><span class="step-number">12</span> Fallos Comunes y Soluciones</h2>
+            
+            <h3>❌ "Usuario o contraseña incorrectos" al iniciar sesión</h3>
+            <p>Si después de ejecutar los scripts SQL el usuario admin no puede acceder:</p>
+            
+            <h4>Solución: Ejecutar el script de reset de contraseña</h4>
+            <p>Existen dos formas de resetear la contraseña del admin:</p>
+            
+            <h4>🔵 Opción 1: Usando el Script PHP (Recomendado y Seguro)</h4>
+            <p>Se incluye un script <code>scripts/reset-admin.php</code> que resetea la contraseña del admin a <strong>admin123</strong>.</p>
+            
+            <div class="alert alert-warning">
+                <span class="alert-icon">🔒</span>
+                <div>
+                    <strong>Seguridad:</strong> El script está en la carpeta <code>scripts/</code> (fuera de public/), 
+                    por lo que <strong>NO es accesible desde el navegador</strong>. Solo se ejecuta desde línea de comandos.
+                </div>
+            </div>
+            
+            <div class="code-title">Ejecutar desde PowerShell o CMD</div>
+            <pre><code class="language-bash">cd C:\FrigoTIC
+C:\laragon\bin\php\php-8.3.28-Win32-vs16-x64\php.exe scripts/reset-admin.php</code></pre>
+            
+            <p><strong>Salida esperada:</strong></p>
+            <pre><code>🔑 FrigoTIC - Reset de Contraseña Admin
+=====================================
+
+Contraseña: admin123
+Hash: $2y$10$...
+
+✅ Contraseña actualizada correctamente para el usuario 'admin'
+Ahora puedes entrar con:
+  Usuario: admin
+  Contraseña: admin123
+
+⚠️ RECUERDA: Cambia la contraseña en el primer login.</code></pre>
+            
+            <h4>🔵 Opción 2: Ejecutar SQL directamente</h4>
+            <p>Si prefieres usar SQL directamente en MySQL (accediendo con phpMyAdmin):</p>
+            
+            <div class="code-title">Reset de contraseña con SQL</div>
+            <pre><code class="language-sql">UPDATE usuarios 
+SET password_hash = '$2y$10$QbaHdVk19xDWQQ2KUI60qOsYPNzodVbXm2T72deFZm7UE9h.cWoWa', 
+    debe_cambiar_password = 0 
+WHERE nombre_usuario = 'admin';</code></pre>
+            
+            <p><strong>Nota:</strong> El hash anterior corresponde a la contraseña <code>admin123</code>. Si deseas usar otra contraseña, genera el hash en PHP:</p>
+            
+            <div class="code-title">Generar hash de contraseña en PHP (CLI)</div>
+            <pre><code class="language-php">&lt;?php
+$password = 'tu_nueva_contraseña';
+$hash = password_hash($password, PASSWORD_DEFAULT);
+echo $hash;
+?&gt;</code></pre>
+            
+            <h3>❌ Pregunta: ¿Cómo sabe la web dónde conectarse a la BD en producción?</h3>
+            <p>Excelente pregunta. FrigoTIC lee la configuración de la base de datos desde el archivo <strong><code>.env</code></strong>:</p>
+            
+            <ol>
+                <li>En el servidor de producción, debes crear el archivo <code>C:\FrigoTIC\.env</code></li>
+                <li>El archivo debe contener las credenciales de BD correctas para la máquina de producción</li>
+                <li>Los valores se leen usando <code>EnvHelper::getDatabaseConfig()</code> en PHP</li>
+                <li>La clase <code>Database</code> usa PDO para conectarse con esas credenciales</li>
+            </ol>
+            
+            <div class="code-title">Ejemplo de .env en producción</div>
+            <pre><code class="language-env"># Base de Datos
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=frigotic
+DB_USER=frigotic_user
+DB_PASS=Frigotic2025!Pass
+
+# SMTP
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+SMTP_USER=tu_email@gmail.com
+SMTP_PASS=tu_contraseña_app
+SMTP_FROM_NAME=FrigoTIC
+
+# Aplicación
+APP_NAME=FrigoTIC
+APP_ENV=production
+APP_DEBUG=false</code></pre>
+            
+            <p><strong>⚠️ Importante:</strong> El archivo <code>.env</code> <strong>NO debe subirse a Git</strong> ya que contiene credenciales sensibles.</p>
+            
+            <h3>Flujo de conexión a BD:</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checkbox">☐</div>
+                    <strong>1.</strong> Usuario accede a frigotic.es
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">☐</div>
+                    <strong>2.</strong> PHP carga <code>app/config/app.php</code> → requiere <code>app/helpers/EnvHelper.php</code>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">☐</div>
+                    <strong>3.</strong> <code>EnvHelper::load('.env')</code> lee el archivo .env desde raíz del proyecto
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">☐</div>
+                    <strong>4.</strong> <code>Database::getInstance()</code> usa las credenciales del .env
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">☐</div>
+                    <strong>5.</strong> PDO conecta a MySQL con host, puerto, usuario y contraseña
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">☐</div>
+                    <strong>6.</strong> Se ejecutan queries contra la BD frigotic
+                </div>
+            </div>
+            
+            <h3>❌ Otros errores comunes</h3>
+            
+            <h4>"SQLSTATE[HY000]: General error: 1030"</h4>
+            <ul>
+                <li>Generalmente significa que las credenciales en .env son incorrectas</li>
+                <li>Verifica que DB_USER y DB_PASS coincidan con el usuario MySQL de producción</li>
+                <li>Comprueba que DB_HOST es accesible desde la máquina de producción</li>
+            </ul>
+            
+            <h4>"Caracteres raros en plantillas de correo (├┐, ├│)"</h4>
+            <ul>
+                <li>Esto indica un problema de encoding en el archivo SQL</li>
+                <li>Solución: Asegúrate de guardar el archivo <code>001_initial_data.sql</code> con encoding UTF-8</li>
+                <li>Al ejecutar el script SQL, usa: <code>SET NAMES utf8mb4; SET CHARACTER SET utf8mb4;</code></li>
+                <li>Comando completo: <code>mysql -u root -p frigotic &lt; 001_initial_data.sql</code></li>
+            </ul>
+        </div>
+
+        <!-- Consideraciones de Seguridad -->
+        <div class="section" id="seguridad">
+            <h2><span class="step-number">13</span> Consideraciones de Seguridad</h2>
+            
+            <h3>🔒 Carpetas del Proyecto y Seguridad</h3>
+            <p>FrigoTIC está estructurado siguiendo el patrón de seguridad recomendado:</p>
+            
+            <table>
+                <tr>
+                    <th>Carpeta</th>
+                    <th>Accesible desde Web</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td><code>public/</code></td>
+                    <td>✅ SÍ (DocumentRoot)</td>
+                    <td>Solo archivos públicos: index.php, CSS, JS, imágenes públicas</td>
+                </tr>
+                <tr>
+                    <td><code>app/</code></td>
+                    <td>❌ NO</td>
+                    <td>Controladores, modelos, vistas. NO accesible desde web</td>
+                </tr>
+                <tr>
+                    <td><code>storage/</code></td>
+                    <td>❌ NO (protegido)</td>
+                    <td>Facturas, informes. Acceso solo mediante <code>public/download.php</code></td>
+                </tr>
+                <tr>
+                    <td><code>scripts/</code></td>
+                    <td>❌ NO</td>
+                    <td>Scripts de CLI (reset-admin.php). Solo se ejecutan desde terminal</td>
+                </tr>
+                <tr>
+                    <td><code>database/</code></td>
+                    <td>❌ NO</td>
+                    <td>Scripts SQL. NO accesibles desde web</td>
+                </tr>
+            </table>
+            
+            <div class="alert alert-warning">
+                <span class="alert-icon">🔒</span>
+                <div>
+                    <strong>Regla de Oro:</strong> Solo la carpeta <code>public/</code> debe ser accesible desde el navegador. 
+                    Todo lo demás debe estar fuera del DocumentRoot de Apache.
+                </div>
+            </div>
+            
+            <h3>⚠️ Scripts de Administración</h3>
+            <p>Los scripts de administración (como <code>scripts/reset-admin.php</code>) están protegidos de dos formas:</p>
+            
+            <ol>
+                <li><strong>Ubicación segura:</strong> Están fuera de la carpeta <code>public/</code></li>
+                <li><strong>Verificación CLI:</strong> Contienen una verificación que impide su acceso desde el navegador</li>
+            </ol>
+            
+            <div class="code-title">Protección en reset-admin.php</div>
+            <pre><code>// Verificar que se ejecuta desde CLI (línea de comandos)
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    die("❌ ERROR: Este script solo se puede ejecutar desde la línea de comandos (CLI)\n");
+}</code></pre>
+            
+            <p>Si alguien intenta acceder desde el navegador a <code>http://frigotic.es/reset-admin.php</code>, verá:</p>
+            <div class="alert alert-danger">
+                <span class="alert-icon">❌</span>
+                <div>ERROR 403: Este script solo se puede ejecutar desde la línea de comandos (CLI)</div>
+            </div>
+            
+            <h3>🔐 Protección de Descarga de Archivos</h3>
+            <p>Los archivos sensibles en <code>storage/</code> están protegidos por:</p>
+            
+            <h4>1. Archivo .htaccess (Bloqueo directo)</h4>
+            <pre><code>Deny from all</code></pre>
+            <p>Impide el acceso directo a <code>http://frigotic.es/storage/facturas/archivo.pdf</code></p>
+            
+            <h4>2. Controlador de descarga (<code>public/download.php</code>)</h4>
+            <p>El único modo de descargar archivos es a través del controlador, que:</p>
+            <ul>
+                <li>Verifica que el usuario está autenticado</li>
+                <li>Verifica el rol del usuario (solo admin pueden descargar facturas)</li>
+                <li>Previene Directory Traversal (imposible acceder a archivos padre)</li>
+                <li>Registra todos los descargas</li>
+            </ul>
+            
+            <h3>📋 Checklist de Seguridad Final</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span><code>public/</code> es la única carpeta accesible desde web</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>El archivo <code>.env</code> NO está en <code>public/</code></span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>El archivo <code>.env</code> NO está en Git (.gitignore)</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Scripts de administración están en <code>scripts/</code> (fuera de public)</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Carpeta <code>storage/</code> tiene <code>.htaccess</code> con "Deny from all"</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Solo <code>public/download.php</code> puede servir archivos de storage/</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>APP_DEBUG=false en producción</span>
+                </div>
+                <div class="checklist-item">
+                    <span class="checkbox">☐</span>
+                    <span>Contraseña de admin cambiada en primer login</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>FrigoTIC</strong> v1.1.0</p>
+            <p>Desarrollado por MJCRSoftware - 2025</p>
+            <p style="margin-top: 1rem;">
+                <a href="https://github.com/Mcalvo0028/FrigoTIC" target="_blank" class="external-link">
+                    📦 Ver en GitHub
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Hacer los checkboxes interactivos
+        document.querySelectorAll('.checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                if (this.textContent === '☐') {
+                    this.textContent = '✓';
+                    this.style.background = '#10b981';
+                    this.style.color = '#b9f2f7';
+                } else {
+                    this.textContent = '☐';
+                    this.style.background = 'transparent';
+                    this.style.color = 'inherit';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

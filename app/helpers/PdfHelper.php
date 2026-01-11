@@ -834,11 +834,12 @@ setTimeout(function() {
     }
     
     /**
-     * Guardar HTML en archivo para descargar
+     * Guardar HTML en archivo para descargar (carpeta segura)
      */
     public static function saveHtmlFile(string $html, string $filename): string
     {
-        $path = dirname(dirname(__DIR__)) . '/public/uploads/reports/';
+        // Guardar en carpeta segura fuera de public
+        $path = dirname(dirname(__DIR__)) . '/storage/reports/';
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
         }
@@ -846,6 +847,7 @@ setTimeout(function() {
         $filepath = $path . $filename . '.html';
         file_put_contents($filepath, $html);
         
-        return '/uploads/reports/' . $filename . '.html';
+        // Devolver URL a través del controlador de descargas seguras
+        return '/download.php?type=report&file=' . $filename . '.html';
     }
 }

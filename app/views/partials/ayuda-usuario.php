@@ -51,6 +51,7 @@ include APP_PATH . '/views/partials/header.php';
             <li><strong>Pagos:</strong> Los pagos que has realizado al administrador</li>
             <li><strong>Filtros:</strong> Busca por fecha, producto o tipo de movimiento</li>
             <li><strong>Deuda:</strong> En el resumen verás tu deuda actual (número negativo = debes dinero)</li>
+            <li><strong>Exportar PDF:</strong> Descarga un informe con tu historial de movimientos</li>
         </ul>
     </div>
 

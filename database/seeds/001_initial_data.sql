@@ -1,8 +1,14 @@
 -- =====================================================
 -- FrigoTIC - Datos Iniciales (Seeds)
--- Versión: 1.0.0
+-- Versión: 1.1.0
 -- Empresa: MJCRSoftware
 -- =====================================================
+-- IMPORTANTE: Ejecutar después de 000_create_database_full.sql
+-- o después de aplicar todas las migraciones
+-- =====================================================
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 USE frigotic;
 
@@ -10,8 +16,8 @@ USE frigotic;
 -- Usuario Administrador por Defecto
 -- Contraseña: admin123 (hasheada con password_hash)
 -- =====================================================
-INSERT INTO usuarios (nombre_usuario, password_hash, email, nombre_completo, rol, debe_cambiar_password, activo) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'frigotic@gmail.com', 'Administrador', 'admin', 1, 1);
+INSERT INTO usuarios (nombre_usuario, password_hash, email, telefono, nombre_completo, rol, debe_cambiar_password, activo) VALUES
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'frigotic@gmail.com', NULL, 'Administrador', 'admin', 1, 1);
 
 -- =====================================================
 -- Configuración Inicial del Sistema
@@ -19,18 +25,18 @@ INSERT INTO usuarios (nombre_usuario, password_hash, email, nombre_completo, rol
 INSERT INTO configuracion (clave, valor, tipo, descripcion) VALUES
 -- Configuración General
 ('app_nombre', 'FrigoTIC', 'string', 'Nombre de la aplicación'),
-('app_version', '1.0.0', 'string', 'Versión actual de la aplicación'),
+('app_version', '1.1.0', 'string', 'Versión actual de la aplicación'),
 ('empresa', 'MJCRSoftware', 'string', 'Nombre de la empresa'),
 
--- Configuración de Base de Datos (referencia)
+-- Configuración de Base de Datos (referencia, se lee del .env)
 ('db_host', 'localhost', 'string', 'Host de la base de datos'),
-('db_port', '3307', 'string', 'Puerto de la base de datos'),
+('db_port', '3306', 'string', 'Puerto de la base de datos'),
 ('db_name', 'frigotic', 'string', 'Nombre de la base de datos'),
 
 -- Configuración SMTP
 ('smtp_host', 'smtp.gmail.com', 'string', 'Servidor SMTP'),
 ('smtp_port', '587', 'int', 'Puerto SMTP'),
-('smtp_user', 'frigotic@gmail.com', 'string', 'Usuario SMTP'),
+('smtp_user', '', 'string', 'Usuario SMTP'),
 ('smtp_password', '', 'string', 'Contraseña SMTP (App Password)'),
 ('smtp_from_name', 'FrigoTIC', 'string', 'Nombre remitente'),
 ('smtp_encryption', 'tls', 'string', 'Tipo de encriptación (tls/ssl)'),
@@ -108,14 +114,19 @@ INSERT INTO plantillas_correo (tipo, nombre, asunto, cuerpo, variables_disponibl
 );
 
 -- =====================================================
--- Productos de Ejemplo (Opcional)
+-- Productos de Ejemplo (Opcional - descomentar si se desea)
 -- =====================================================
-INSERT INTO productos (nombre, descripcion, precio_compra, precio_venta, stock, activo) VALUES
-('Coca-Cola', 'Refresco de cola 33cl', 0.35, 0.50, 24, 1),
-('Coca-Cola Zero', 'Refresco de cola sin azúcar 33cl', 0.35, 0.50, 24, 1),
-('Fanta Naranja', 'Refresco de naranja 33cl', 0.35, 0.50, 12, 1),
-('Agua Mineral', 'Botella de agua 50cl', 0.20, 0.30, 48, 1),
-('Nestea', 'Té frío al limón 33cl', 0.40, 0.60, 12, 1),
-('Cerveza', 'Cerveza rubia 33cl', 0.45, 0.70, 24, 1),
-('Zumo de Naranja', 'Zumo natural 25cl', 0.50, 0.80, 12, 1),
-('Red Bull', 'Bebida energética 25cl', 1.00, 1.50, 6, 1);
+-- INSERT INTO productos (nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, activo) VALUES
+-- ('Coca-Cola', 'Refresco de cola 33cl', 0.35, 0.50, 24, 5, 1),
+-- ('Coca-Cola Zero', 'Refresco de cola sin azúcar 33cl', 0.35, 0.50, 24, 5, 1),
+-- ('Fanta Naranja', 'Refresco de naranja 33cl', 0.35, 0.50, 12, 5, 1),
+-- ('Agua Mineral', 'Botella de agua 50cl', 0.20, 0.30, 48, 10, 1),
+-- ('Nestea', 'Té frío al limón 33cl', 0.40, 0.60, 12, 5, 1),
+-- ('Cerveza', 'Cerveza rubia 33cl', 0.45, 0.70, 24, 5, 1),
+-- ('Zumo de Naranja', 'Zumo natural 25cl', 0.50, 0.80, 12, 5, 1),
+-- ('Red Bull', 'Bebida energética 25cl', 1.00, 1.50, 6, 3, 1);
+
+-- =====================================================
+-- Mensaje de confirmación
+-- =====================================================
+SELECT '✅ Datos iniciales insertados correctamente (v1.1.0)' AS mensaje;

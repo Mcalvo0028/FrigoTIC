@@ -1,0 +1,13 @@
+# =====================================================
+# FrigoTIC - Protección de archivos sensibles
+# =====================================================
+# Denegar acceso directo a todos los archivos de esta carpeta
+# Los archivos solo se sirven a través de /public/download.php
+
+# Denegar todo acceso
+Deny from all
+
+# Alternativa para Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

@@ -4,10 +4,14 @@ app/config/smtp.local.php
 .env
 
 # Uploads de usuarios (no versionar archivos subidos)
-public/uploads/facturas/*
 public/uploads/productos/*
-!public/uploads/facturas/.gitkeep
 !public/uploads/productos/.gitkeep
+
+# Storage (archivos sensibles fuera de public)
+storage/facturas/*
+storage/reports/*
+!storage/facturas/.gitkeep
+!storage/reports/.gitkeep
 
 # Carpeta de scripts temporales
 Script_Temp/*
@@ -45,4 +49,3 @@ cache/
 
 # Varios
 temp/
-Actúa como un programador arquitecto profesional.docx
