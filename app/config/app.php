@@ -34,7 +34,7 @@ return [
     // Configuración de sesión
     'session' => [
         'name' => 'FRIGOTIC_SESSION',
-        'lifetime' => 3600 * 8,  // 8 horas
+        'lifetime' => 0,  // 0 = Se cierra al cerrar el navegador
         'path' => '/',
         'secure' => false,       // Cambiar a true en producción con HTTPS
         'httponly' => true,

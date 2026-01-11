@@ -54,63 +54,57 @@ INSERT INTO plantillas_correo (tipo, nombre, asunto, cuerpo, variables_disponibl
 (
     'bienvenida',
     'Correo de Bienvenida',
-    'Bienvenido a FrigoTIC - {{nombre_usuario}}',
+    'Bienvenido a FrigoTIC',
     '<h2>¡Bienvenido a FrigoTIC!</h2>
-<p>Hola <strong>{{nombre_completo}}</strong>,</p>
+<p>Hola <strong>{{nombre}}</strong>,</p>
 <p>Tu cuenta ha sido creada exitosamente en FrigoTIC.</p>
 <p><strong>Datos de acceso:</strong></p>
 <ul>
-    <li>Usuario: {{nombre_usuario}}</li>
+    <li>Usuario: {{usuario}}</li>
     <li>Contraseña temporal: {{password_temporal}}</li>
 </ul>
 <p>Por seguridad, deberás cambiar tu contraseña en el primer inicio de sesión.</p>
 <p>Saludos,<br>El equipo de FrigoTIC</p>',
-    '{{nombre_usuario}}, {{nombre_completo}}, {{email}}, {{password_temporal}}'
+    '{{nombre}}, {{usuario}}, {{email}}, {{password_temporal}}'
 ),
 (
     'reseteo_password',
     'Reseteo de Contraseña',
     'FrigoTIC - Reseteo de Contraseña',
     '<h2>Reseteo de Contraseña</h2>
-<p>Hola <strong>{{nombre_completo}}</strong>,</p>
+<p>Hola <strong>{{nombre}}</strong>,</p>
 <p>Tu contraseña ha sido reseteada por el administrador.</p>
 <p><strong>Nueva contraseña temporal:</strong> {{password_temporal}}</p>
 <p>Por seguridad, deberás cambiar tu contraseña en el próximo inicio de sesión.</p>
 <p>Saludos,<br>El equipo de FrigoTIC</p>',
-    '{{nombre_usuario}}, {{nombre_completo}}, {{email}}, {{password_temporal}}'
+    '{{nombre}}, {{usuario}}, {{email}}, {{password_temporal}}'
 ),
 (
-    'aviso_pago',
-    'Aviso de Pago Pendiente',
-    'FrigoTIC - Recordatorio de Pago Pendiente',
-    '<h2>Recordatorio de Pago</h2>
-<p>Hola <strong>{{nombre_completo}}</strong>,</p>
-<p>Te recordamos que tienes un saldo pendiente de <strong>{{deuda_total}}€</strong> en FrigoTIC.</p>
-<p>Por favor, realiza el pago al administrador a la mayor brevedad posible.</p>
-<p><strong>Resumen del mes:</strong></p>
-<ul>
-    <li>Consumos: {{total_consumos}}</li>
-    <li>Total a pagar: {{deuda_total}}€</li>
-</ul>
-<p>Saludos,<br>El equipo de FrigoTIC</p>',
-    '{{nombre_usuario}}, {{nombre_completo}}, {{email}}, {{deuda_total}}, {{total_consumos}}, {{mes}}, {{año}}'
-),
-(
-    'confirmacion_pago',
+    'pago_confirmado',
     'Confirmación de Pago',
     'FrigoTIC - Pago Recibido',
     '<h2>Pago Confirmado</h2>
-<p>Hola <strong>{{nombre_completo}}</strong>,</p>
-<p>Hemos recibido tu pago de <strong>{{cantidad_pagada}}€</strong>.</p>
-<p><strong>Detalles:</strong></p>
-<ul>
-    <li>Fecha: {{fecha_pago}}</li>
-    <li>Cantidad: {{cantidad_pagada}}€</li>
-    <li>Saldo pendiente: {{saldo_pendiente}}€</li>
-</ul>
+<p>Hola <strong>{{nombre}}</strong>,</p>
+<p>Hemos recibido tu pago de <strong>{{cantidad}} €</strong>.</p>
+<p><strong>Fecha:</strong> {{fecha}}</p>
+<h3>Resumen del período:</h3>
+<p>Total consumido: {{total_consumos}}</p>
+{{productos_consumidos}}
 <p>¡Gracias por tu pago!</p>
 <p>Saludos,<br>El equipo de FrigoTIC</p>',
-    '{{nombre_usuario}}, {{nombre_completo}}, {{email}}, {{cantidad_pagada}}, {{fecha_pago}}, {{saldo_pendiente}}'
+    '{{nombre}}, {{cantidad}}, {{fecha}}, {{total_consumos}}, {{productos_consumidos}}'
+),
+(
+    'recordatorio_pago',
+    'Recordatorio de Pago',
+    'FrigoTIC - Recordatorio de Pago Pendiente',
+    '<h2>Recordatorio de Pago</h2>
+<p>Hola <strong>{{nombre}}</strong>,</p>
+<p>Te recordamos que tienes un saldo pendiente de <strong>{{deuda}} €</strong> en FrigoTIC.</p>
+<p>Tienes consumos pendientes desde <strong>{{fecha_desde}}</strong>.</p>
+<p>Por favor, realiza el pago al administrador a la mayor brevedad posible.</p>
+<p>Saludos,<br>El equipo de FrigoTIC</p>',
+    '{{nombre}}, {{deuda}}, {{fecha_desde}}'
 );
 
 -- =====================================================

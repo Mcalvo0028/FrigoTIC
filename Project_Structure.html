@@ -88,6 +88,9 @@
                                 <li><span class="folder">📁 helpers/</span>
                                     <ul>
                                         <li><span class="file-php">🐘 functions.php</span> - Funciones globales</li>
+                                        <li><span class="file-php">🐘 PdfHelper.php</span> - Generación de informes PDF</li>
+                                        <li><span class="file-php">🐘 EmailHelper.php</span> - Envío de correos SMTP</li>
+                                        <li><span class="file-php">🐘 EnvHelper.php</span> - Lectura de .env</li>
                                     </ul>
                                 </li>
                                 <li><span class="folder">📁 models/</span>
@@ -128,6 +131,7 @@
                         <li><span class="folder">📁 public/</span>
                             <ul>
                                 <li><span class="file-php">🐘 index.php</span> - Punto de entrada / Router</li>
+                                <li><span class="file-php">🐘 export.php</span> - Exportación PDF</li>
                                 <li><span class="folder">📁 css/</span>
                                     <ul>
                                         <li><span class="file-css">🎨 style.css</span></li>
@@ -168,7 +172,8 @@
             <tr><td>Productos</td><td><code>admin/productos.php</code></td><td>CRUD productos, reponer stock, imágenes</td></tr>
             <tr><td>Facturas</td><td><code>admin/facturas.php</code></td><td>Subir/descargar/eliminar PDFs</td></tr>
             <tr><td>Movimientos</td><td><code>admin/movimientos.php</code></td><td>Historial completo con filtros</td></tr>
-            <tr><td>Gráficos</td><td><code>admin/graficos.php</code></td><td>Estadísticas con Chart.js</td></tr>
+            <tr><td>Gráficos</td><td><code>admin/graficos.php</code></td><td>Estadísticas con Chart.js + Exportar PDF</td></tr>
+            <tr><td>Correos</td><td><code>admin/correos.php</code></td><td>Plantillas de correo automático</td></tr>
             <tr><td>Configuración</td><td><code>admin/configuracion.php</code></td><td>SMTP, contraseña, ajustes generales</td></tr>
         </table>
 
@@ -183,7 +188,7 @@
         <h2>🗄️ Base de Datos</h2>
         <table>
             <tr><th>Tabla</th><th>Descripción</th><th>Campos principales</th></tr>
-            <tr><td><code>usuarios</code></td><td>Usuarios del sistema</td><td>id, nombre_usuario, password_hash, email, rol</td></tr>
+            <tr><td><code>usuarios</code></td><td>Usuarios del sistema</td><td>id, nombre_usuario, password_hash, email, telefono, rol</td></tr>
             <tr><td><code>productos</code></td><td>Bebidas disponibles</td><td>id, nombre, precio_compra, precio_venta, stock</td></tr>
             <tr><td><code>movimientos</code></td><td>Registro de operaciones</td><td>id, usuario_id, producto_id, tipo, cantidad, total</td></tr>
             <tr><td><code>facturas</code></td><td>Archivos PDF subidos</td><td>id, nombre_original, ruta_archivo, fecha_subida</td></tr>
@@ -201,15 +206,26 @@
         <h2>⚙️ Configuración Técnica</h2>
         <table>
             <tr><th>Elemento</th><th>Valor</th></tr>
-            <tr><td>Puerto MySQL</td><td><code>3307</code> (evita conflicto con 3306)</td></tr>
+            <tr><td>Puerto MySQL</td><td><code>3306</code> (configurable en .env)</td></tr>
             <tr><td>SMTP Server</td><td><code>smtp.gmail.com:587 (TLS)</code></td></tr>
             <tr><td>Ruta Desarrollo</td><td><code>C:\Programacion\FrigoTIC</code></td></tr>
             <tr><td>Ruta Producción</td><td><code>C:\FrigoTIC</code></td></tr>
-            <tr><td>GitHub</td><td><code>https://github.com/Mcvo0028/FrigoTIC.git</code></td></tr>
+            <tr><td>GitHub</td><td><code>https://github.com/Mcalvo0028/FrigoTIC.git</code></td></tr>
+        </table>
+
+        <h2>📄 Sistema de Exportación PDF</h2>
+        <table>
+            <tr><th>Sección</th><th>Contenido Exportado</th></tr>
+            <tr><td>Usuarios</td><td>Lista con nombre, email, teléfono, rol, deuda</td></tr>
+            <tr><td>Productos</td><td>Lista con imagen, nombre, precios, stock</td></tr>
+            <tr><td>Facturas</td><td>Lista con fecha, nombre, descripción</td></tr>
+            <tr><td>Movimientos</td><td>Historial con usuario, producto, tipo, cantidad, total</td></tr>
+            <tr><td>Gráficos</td><td>Datos tabulares de los últimos 30 días</td></tr>
+            <tr><td>Baja Usuario</td><td>Informe con historial de consumos y pagos</td></tr>
         </table>
 
         <footer style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #334155; color: #6b7280; text-align: center;">
-            <p>FrigoTIC v1.0.0 - Desarrollado por MJCRSoftware - 2024</p>
+            <p>FrigoTIC v1.1.0 - Desarrollado por MJCRSoftware - 2025</p>
         </footer>
     </div>
 </body>

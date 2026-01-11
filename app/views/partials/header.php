@@ -10,6 +10,8 @@
 $isAdmin = ($_SESSION['user_role'] ?? '') === 'admin';
 $themeClass = $isAdmin ? 'theme-admin' : '';
 $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
+$favicon = $isAdmin ? '/images/favicon_rojo.ico' : '/images/favicon_azul.ico';
+$dashboardUrl = $isAdmin ? '/admin/dashboard' : '/user/productos';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,6 +19,8 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'FrigoTIC') ?> - FrigoTIC</title>
+    <link rel="icon" type="image/x-icon" href="<?= $favicon ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= $favicon ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <?php if (isset($extraCss)): ?>
@@ -27,10 +31,10 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
     <div class="app-container">
         <!-- Header -->
         <header class="header">
-            <div class="header-brand">
-                <i class="fas fa-snowflake"></i>
+            <a href="<?= $dashboardUrl ?>" class="header-brand" title="Ir al inicio">
+                <img src="<?= $favicon ?>" alt="FrigoTIC" class="header-favicon">
                 <span>FrigoTIC</span>
-            </div>
+            </a>
 
             <nav class="header-nav">
                 <a href="/ayuda/<?= $isAdmin ? 'admin' : 'usuario' ?>" 

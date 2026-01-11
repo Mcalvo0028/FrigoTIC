@@ -7,10 +7,14 @@ $pageTitle = 'Gestión de Facturas';
 
 require_once APP_PATH . '/models/Database.php';
 require_once APP_PATH . '/models/Factura.php';
+require_once APP_PATH . '/models/Configuracion.php';
 
 use App\Models\Factura;
+use App\Models\Configuracion;
 
 $facturaModel = new Factura();
+$configModel = new Configuracion();
+$defaultPerPage = (int) $configModel->get('items_por_pagina', 10);
 
 // Procesar acciones
 $message = null;
@@ -78,7 +82,7 @@ if (isset($_GET['download'])) {
 
 // Obtener facturas
 $page = (int) ($_GET['page'] ?? 1);
-$perPage = (int) ($_GET['perPage'] ?? 10);
+$perPage = (int) ($_GET['perPage'] ?? $defaultPerPage);
 $filters = [
     'buscar' => $_GET['buscar'] ?? null,
     'fecha_desde' => $_GET['fecha_desde'] ?? null,
@@ -102,9 +106,15 @@ include APP_PATH . '/views/partials/admin-tabs.php';
 
 <div class="d-flex justify-between align-center mb-4 flex-wrap gap-3">
     <h1><i class="fas fa-file-invoice"></i> Gestión de Facturas</h1>
-    <button class="btn btn-primary" onclick="openUploadModal()">
-        <i class="fas fa-file-upload"></i> Subir Factura
-    </button>
+    <div class="d-flex gap-2">
+        <a href="/export?action=export&type=facturas&<?= http_build_query($filters) ?>" 
+           target="_blank" class="btn btn-secondary">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </a>
+        <button class="btn btn-primary" onclick="openUploadModal()">
+            <i class="fas fa-file-upload"></i> Subir Factura
+        </button>
+    </div>
 </div>
 
 <!-- Filtros -->
@@ -197,13 +207,22 @@ include APP_PATH . '/views/partials/admin-tabs.php';
             </div>
 
             <!-- Paginación -->
-            <?php if ($totalPages > 1): ?>
-                <div class="pagination-container">
+            <div class="pagination-container">
+                <div class="per-page-selector">
+                    <label>Mostrar:</label>
+                    <select onchange="window.location.href='?perPage='+this.value+'&<?= http_build_query(array_filter($filters)) ?>'">
+                        <?php foreach ([5, 10, 25, 50] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= $perPage == $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span>elementos</span>
+                </div>
+                <?php if ($totalPages > 1): ?>
                     <nav class="pagination-nav">
                         <ul class="pagination">
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                 <li>
-                                    <a href="?page=<?= $i ?>&perPage=<?= $perPage ?>" 
+                                    <a href="?page=<?= $i ?>&perPage=<?= $perPage ?>&<?= http_build_query(array_filter($filters)) ?>" 
                                        class="pagination-link <?= $i == $page ? 'active' : '' ?>">
                                         <?= $i ?>
                                     </a>
@@ -211,8 +230,8 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                             <?php endfor; ?>
                         </ul>
                     </nav>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
     </div>
 </div>

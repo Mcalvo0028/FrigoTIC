@@ -100,6 +100,7 @@ class Producto
             'precio_compra' => $data['precio_compra'] ?? 0,
             'precio_venta' => $data['precio_venta'] ?? 0,
             'stock' => $data['stock'] ?? 0,
+            'stock_minimo' => $data['stock_minimo'] ?? 5,
             'imagen' => $data['imagen'] ?? null,
             'activo' => $data['activo'] ?? 1
         ];
@@ -112,7 +113,7 @@ class Producto
      */
     public function update(int $id, array $data): bool
     {
-        $allowedFields = ['nombre', 'descripcion', 'precio_compra', 'precio_venta', 'stock', 'imagen', 'activo'];
+        $allowedFields = ['nombre', 'descripcion', 'precio_compra', 'precio_venta', 'stock', 'stock_minimo', 'imagen', 'activo'];
         $updateData = array_intersect_key($data, array_flip($allowedFields));
 
         if (empty($updateData)) {
@@ -175,13 +176,22 @@ class Producto
     }
 
     /**
-     * Obtener productos con stock bajo
+     * Obtener productos con stock bajo (según su stock_minimo individual)
      */
-    public function getStockBajo(int $limite = 5): array
+    public function getStockBajo(): array
     {
         return $this->db->fetchAll(
-            "SELECT * FROM {$this->table} WHERE activo = 1 AND stock <= ? ORDER BY stock ASC",
-            [$limite]
+            "SELECT * FROM {$this->table} WHERE activo = 1 AND stock <= stock_minimo ORDER BY stock ASC"
+        );
+    }
+
+    /**
+     * Obtener productos activos (para usuarios) - incluye todos, incluso sin stock
+     */
+    public function getActivosConAgotados(): array
+    {
+        return $this->db->fetchAll(
+            "SELECT * FROM {$this->table} WHERE activo = 1 ORDER BY stock = 0, nombre ASC"
         );
     }
 

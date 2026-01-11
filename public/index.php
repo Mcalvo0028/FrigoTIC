@@ -19,8 +19,15 @@ define('PUBLIC_PATH', __DIR__);
 // Cargar configuración
 $appConfig = require APP_PATH . '/config/app.php';
 
-// Configurar sesión
+// Configurar sesión para que expire al cerrar navegador
 session_name($appConfig['session']['name']);
+session_set_cookie_params([
+    'lifetime' => 0,  // Expira al cerrar navegador
+    'path' => '/',
+    'secure' => $appConfig['session']['secure'],
+    'httponly' => $appConfig['session']['httponly'],
+    'samesite' => 'Lax'
+]);
 session_start();
 
 // Cargar helpers
@@ -157,6 +164,11 @@ switch ($uri) {
         require APP_PATH . '/views/admin/configuracion.php';
         break;
 
+    case 'admin/correos':
+        $auth->requireAdmin();
+        require APP_PATH . '/views/admin/correos.php';
+        break;
+
     // API endpoints
     case 'api/consumo':
         $auth->requireAuth();
@@ -201,6 +213,12 @@ switch ($uri) {
     case 'ayuda/admin':
         $auth->requireAdmin();
         require APP_PATH . '/views/partials/ayuda-admin.php';
+        break;
+
+    // Exportación PDF
+    case 'export':
+        $auth->requireAuth();
+        require PUBLIC_PATH . '/export.php';
         break;
 
     default:

@@ -8,12 +8,16 @@ $pageTitle = 'Gestión de Productos';
 require_once APP_PATH . '/models/Database.php';
 require_once APP_PATH . '/models/Producto.php';
 require_once APP_PATH . '/models/Movimiento.php';
+require_once APP_PATH . '/models/Configuracion.php';
 
 use App\Models\Producto;
 use App\Models\Movimiento;
+use App\Models\Configuracion;
 
 $productoModel = new Producto();
 $movimientoModel = new Movimiento();
+$configModel = new Configuracion();
+$defaultPerPage = (int) $configModel->get('items_por_pagina', 10);
 
 // Procesar acciones
 $message = null;
@@ -30,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'precio_compra' => (float) $_POST['precio_compra'],
                 'precio_venta' => (float) $_POST['precio_venta'],
                 'stock' => (int) $_POST['stock'],
+                'stock_minimo' => (int) ($_POST['stock_minimo'] ?? 5),
             ];
             
             // Procesar imagen
@@ -57,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'precio_compra' => (float) $_POST['precio_compra'],
                 'precio_venta' => (float) $_POST['precio_venta'],
                 'stock' => (int) $_POST['stock'],
+                'stock_minimo' => (int) ($_POST['stock_minimo'] ?? 5),
             ];
             
             // Procesar nueva imagen
@@ -95,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Obtener productos
 $page = (int) ($_GET['page'] ?? 1);
-$perPage = (int) ($_GET['perPage'] ?? 10);
+$perPage = (int) ($_GET['perPage'] ?? $defaultPerPage);
 $filters = ['buscar' => $_GET['buscar'] ?? null];
 
 $result = $productoModel->getAll($filters, $page, $perPage);
@@ -115,9 +121,15 @@ include APP_PATH . '/views/partials/admin-tabs.php';
 
 <div class="d-flex justify-between align-center mb-4 flex-wrap gap-3">
     <h1><i class="fas fa-box"></i> Gestión de Productos</h1>
-    <button class="btn btn-primary" onclick="openCreateModal()">
-        <i class="fas fa-plus-circle"></i> Nuevo Producto
-    </button>
+    <div class="d-flex gap-2">
+        <a href="/export?action=export&type=productos&<?= http_build_query($filters) ?>" 
+           target="_blank" class="btn btn-secondary">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </a>
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            <i class="fas fa-plus-circle"></i> Nuevo Producto
+        </button>
+    </div>
 </div>
 
 <!-- Búsqueda -->
@@ -186,9 +198,16 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                                 <td class="text-right"><?= number_format($p['precio_compra'], 2, ',', '.') ?> €</td>
                                 <td class="text-right"><strong><?= number_format($p['precio_venta'], 2, ',', '.') ?> €</strong></td>
                                 <td class="text-center">
-                                    <span class="badge <?= $p['stock'] == 0 ? 'badge-danger' : ($p['stock'] <= 5 ? 'badge-warning' : 'badge-success') ?>">
+                                    <?php 
+                                    $stockMinimo = $p['stock_minimo'] ?? 5;
+                                    $stockClass = $p['stock'] == 0 ? 'badge-danger' : ($p['stock'] <= $stockMinimo ? 'badge-warning' : 'badge-success');
+                                    ?>
+                                    <span class="badge <?= $stockClass ?>">
                                         <?= $p['stock'] ?>
                                     </span>
+                                    <?php if ($p['stock'] <= $stockMinimo && $p['stock'] > 0): ?>
+                                        <br><small class="text-warning">Min: <?= $stockMinimo ?></small>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <span class="badge <?= $p['activo'] ? 'badge-success' : 'badge-danger' ?>">
@@ -223,13 +242,22 @@ include APP_PATH . '/views/partials/admin-tabs.php';
             </div>
 
             <!-- Paginación -->
-            <?php if ($totalPages > 1): ?>
-                <div class="pagination-container">
+            <div class="pagination-container">
+                <div class="per-page-selector">
+                    <label>Mostrar:</label>
+                    <select onchange="window.location.href='?perPage='+this.value+'&<?= http_build_query(array_filter($filters)) ?>'">
+                        <?php foreach ([5, 10, 25, 50] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= $perPage == $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span>elementos</span>
+                </div>
+                <?php if ($totalPages > 1): ?>
                     <nav class="pagination-nav">
                         <ul class="pagination">
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                 <li>
-                                    <a href="?page=<?= $i ?>&perPage=<?= $perPage ?>" 
+                                    <a href="?page=<?= $i ?>&perPage=<?= $perPage ?>&<?= http_build_query(array_filter($filters)) ?>" 
                                        class="pagination-link <?= $i == $page ? 'active' : '' ?>">
                                         <?= $i ?>
                                     </a>
@@ -237,8 +265,8 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                             <?php endfor; ?>
                         </ul>
                     </nav>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
     </div>
 </div>
@@ -274,6 +302,11 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 <div class="form-group">
                     <label class="form-label">Stock inicial</label>
                     <input type="number" name="stock" class="form-control" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stock mínimo (alerta)</label>
+                    <input type="number" name="stock_minimo" class="form-control" min="0" value="5">
+                    <small class="form-text">Se mostrará alerta cuando el stock sea igual o menor a este valor</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Imagen</label>
@@ -317,9 +350,15 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                         <input type="number" name="precio_venta" id="edit_precio_venta" class="form-control" step="0.01" min="0" required>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Stock</label>
-                    <input type="number" name="stock" id="edit_stock" class="form-control" min="0">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Stock</label>
+                        <input type="number" name="stock" id="edit_stock" class="form-control" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stock mínimo (alerta)</label>
+                        <input type="number" name="stock_minimo" id="edit_stock_minimo" class="form-control" min="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Nueva imagen (opcional)</label>
@@ -375,6 +414,7 @@ function openEditModal(producto) {
     document.getElementById('edit_precio_compra').value = producto.precio_compra;
     document.getElementById('edit_precio_venta').value = producto.precio_venta;
     document.getElementById('edit_stock').value = producto.stock;
+    document.getElementById('edit_stock_minimo').value = producto.stock_minimo || 5;
     document.getElementById('editModal').classList.add('active');
 }
 

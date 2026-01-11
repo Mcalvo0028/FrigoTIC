@@ -1,6 +1,72 @@
 # 📋 Registro de Procesos - FrigoTIC
 
-## Versión 1.0.0
+## Versión 1.1.0 - Mejoras y Correcciones
+
+### Nuevas Funcionalidades ✅
+
+1. **Sistema de Exportación a PDF**
+   - Nuevo archivo `public/export.php` para manejar todas las exportaciones
+   - Nuevo helper `app/helpers/PdfHelper.php` para generación de informes HTML/PDF
+   - Exportación disponible en: Usuarios, Productos, Facturas, Movimientos, Gráficos
+   - Los gráficos se exportan con datos de los últimos 30 días en formato tabular
+   - Imágenes de productos incluidas en la exportación (convertidas a base64)
+   - Informe de baja de usuario con resumen de consumos y pagos
+
+2. **Mejoras en Gestión de Usuarios**
+   - Añadido campo de teléfono en la tabla de usuarios
+   - Visualización de deuda negativa corregida (ej: -3,25 € cuando el usuario debe dinero)
+   - Corrección del bloqueo de popups al eliminar usuarios
+
+3. **Mejoras en Movimientos**
+   - Nuevo tipo de movimiento "reposición" con color azul distintivo
+   - Filtros mejorados para búsqueda avanzada
+
+4. **Sistema de Correos Mejorado**
+   - Corrección del sistema de plantillas de correo
+   - Variables soportadas: `{{nombre}}`, `{{usuario}}`, `{{email}}`, `{{password_temporal}}`
+   - Variables adicionales: `{{cantidad}}`, `{{fecha}}`, `{{deuda}}`, `{{fecha_desde}}`
+   - Interfaz simplificada para mostrar variables disponibles
+
+5. **Mejoras de UI/UX**
+   - Paginación corregida (usa clave `items_por_pagina`)
+   - Botones de exportar PDF en todas las vistas de admin
+   - Selector de elementos por página funcional
+
+### Archivos Nuevos
+
+| Archivo | Descripción |
+|---------|-------------|
+| `public/export.php` | Controlador de exportaciones PDF |
+| `app/helpers/PdfHelper.php` | Generador de informes HTML para impresión |
+| `app/helpers/EmailHelper.php` | Sistema de envío de correos con plantillas |
+| `app/helpers/EnvHelper.php` | Lector de variables de entorno .env |
+
+### Archivos Modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `app/views/admin/usuarios.php` | Campo teléfono, botón exportar, corrección popup |
+| `app/views/admin/productos.php` | Botón exportar PDF |
+| `app/views/admin/facturas.php` | Botón exportar PDF |
+| `app/views/admin/movimientos.php` | Botón exportar PDF, color reposición |
+| `app/views/admin/graficos.php` | Botón exportar PDF con datos 30 días |
+| `app/views/admin/correos.php` | Variables simplificadas |
+| `database/seeds/001_initial_data.sql` | Plantillas de correo actualizadas |
+
+### Correcciones de Bugs
+
+- ✅ Error 404 en exportación PDF (archivo no existía)
+- ✅ Variable de sesión incorrecta (`$_SESSION['rol']` → `$_SESSION['user_role']`)
+- ✅ Clave de configuración incorrecta (`elementos_por_pagina` → `items_por_pagina`)
+- ✅ Paginación no funcionaba correctamente
+- ✅ Variables de plantilla de correo no se reemplazaban
+- ✅ Bloqueo de popups al eliminar usuarios
+- ✅ Alineación de columnas en informe de baja de usuario
+- ✅ Deuda mostrada como positiva cuando debería ser negativa
+
+---
+
+## Versión 1.0.0 - Release Inicial
 
 ### Fase 1 - Inicio del Proyecto ✅
 
@@ -116,17 +182,17 @@
 
 ### Archivos Creados
 
-**Total: 35+ archivos**
+**Total: 40+ archivos**
 
 ---
 
 ## 📝 Próximos Pasos (Opcionales)
 
-- [ ] Subir al repositorio GitHub
-- [ ] Configurar MySQL en `C:\FrigoTIC\MySQL` (puerto 3307)
-- [ ] Ejecutar scripts de migración y seeds
+- [x] Subir al repositorio GitHub
+- [x] Configurar MySQL (puerto 3306 por defecto)
+- [x] Ejecutar scripts de migración y seeds
 - [ ] Configurar contraseña de aplicación de Google para SMTP
-- [ ] Crear logo FrigoTIC para `/public/images/`
+- [x] Crear logo FrigoTIC para `/public/images/`
 - [ ] Pruebas de integración
 - [ ] Despliegue en producción
 
@@ -144,14 +210,14 @@
 - MVC simplificado para facilitar mantenimiento
 - Separación de vistas por rol (admin/user)
 - Archivos de configuración centralizados
-- Puerto MySQL 3307 para evitar conflictos
+- Configuración mediante archivo .env (no se sube a Git)
 
 ### Credenciales por Defecto
 - **Admin**: usuario `admin`, contraseña `admin123`
-- **Puerto MySQL**: 3307
+- **Puerto MySQL**: 3306 (configurable en .env)
 - **Base de datos**: `frigotic`
 
 ---
 
-*Última actualización: Enero 2026*
+*Última actualización: Enero 2025*
 *Desarrollado por MJCRSoftware*

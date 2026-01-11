@@ -9,18 +9,22 @@ require_once APP_PATH . '/models/Database.php';
 require_once APP_PATH . '/models/Movimiento.php';
 require_once APP_PATH . '/models/Producto.php';
 require_once APP_PATH . '/models/Usuario.php';
+require_once APP_PATH . '/models/Configuracion.php';
 
 use App\Models\Movimiento;
 use App\Models\Producto;
 use App\Models\Usuario;
+use App\Models\Configuracion;
 
 $movimientoModel = new Movimiento();
 $productoModel = new Producto();
 $usuarioModel = new Usuario();
+$configModel = new Configuracion();
+$defaultPerPage = (int) $configModel->get('items_por_pagina', 10);
 
 // Parámetros de filtro y paginación
 $page = (int) ($_GET['page'] ?? 1);
-$perPage = (int) ($_GET['perPage'] ?? 10);
+$perPage = (int) ($_GET['perPage'] ?? $defaultPerPage);
 $filters = [
     'usuario_id' => $_GET['usuario_id'] ?? null,
     'producto_id' => $_GET['producto_id'] ?? null,
@@ -40,7 +44,13 @@ include APP_PATH . '/views/partials/header.php';
 include APP_PATH . '/views/partials/admin-tabs.php';
 ?>
 
-<h1 class="mb-4"><i class="fas fa-exchange-alt"></i> Todos los Movimientos</h1>
+<div class="d-flex justify-between align-center mb-4 flex-wrap gap-3">
+    <h1><i class="fas fa-exchange-alt"></i> Todos los Movimientos</h1>
+    <a href="/export?action=export&type=movimientos&<?= http_build_query($filters) ?>" 
+       target="_blank" class="btn btn-secondary">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+    </a>
+</div>
 
 <!-- Filtros -->
 <div class="filters-container">

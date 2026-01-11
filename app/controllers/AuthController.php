@@ -109,7 +109,7 @@ class AuthController
         session_destroy();
         
         // Redirigir al login
-        header('Location: /frigotic/login');
+        header('Location: /login');
         exit;
     }
 

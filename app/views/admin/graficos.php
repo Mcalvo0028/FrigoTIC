@@ -27,19 +27,24 @@ include APP_PATH . '/views/partials/admin-tabs.php';
 <!-- Selector de tipo de gráfico -->
 <div class="card mb-4">
     <div class="card-body">
-        <div class="d-flex gap-3 flex-wrap">
-            <button class="btn btn-primary active" onclick="showChart('consumosMes')" id="btn-consumosMes">
-                <i class="fas fa-chart-line"></i> Consumos por Mes
-            </button>
-            <button class="btn btn-secondary" onclick="showChart('consumosProducto')" id="btn-consumosProducto">
-                <i class="fas fa-chart-pie"></i> Por Producto
-            </button>
-            <button class="btn btn-secondary" onclick="showChart('consumosUsuario')" id="btn-consumosUsuario">
-                <i class="fas fa-chart-bar"></i> Por Usuario
-            </button>
-            <button class="btn btn-secondary" onclick="showChart('pagosConsumos')" id="btn-pagosConsumos">
-                <i class="fas fa-balance-scale"></i> Pagos vs Consumos
-            </button>
+        <div class="d-flex gap-3 flex-wrap justify-content-between align-items-center">
+            <div class="d-flex gap-3 flex-wrap">
+                <button class="btn btn-primary active" onclick="showChart('consumosMes')" id="btn-consumosMes">
+                    <i class="fas fa-chart-line"></i> Consumos por Mes
+                </button>
+                <button class="btn btn-secondary" onclick="showChart('consumosProducto')" id="btn-consumosProducto">
+                    <i class="fas fa-chart-pie"></i> Por Producto
+                </button>
+                <button class="btn btn-secondary" onclick="showChart('consumosUsuario')" id="btn-consumosUsuario">
+                    <i class="fas fa-chart-bar"></i> Por Usuario
+                </button>
+                <button class="btn btn-secondary" onclick="showChart('pagosConsumos')" id="btn-pagosConsumos">
+                    <i class="fas fa-balance-scale"></i> Pagos vs Consumos
+                </button>
+            </div>
+            <a href="/export?action=export&type=graficos" target="_blank" class="btn btn-outline-primary">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </a>
         </div>
     </div>
 </div>

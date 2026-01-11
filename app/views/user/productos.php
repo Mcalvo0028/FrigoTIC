@@ -16,7 +16,8 @@ use App\Models\Movimiento;
 $productoModel = new Producto();
 $movimientoModel = new Movimiento();
 
-$productos = $productoModel->getActivos();
+// Obtener todos los productos activos, incluyendo los agotados
+$productos = $productoModel->getActivosConAgotados();
 $resumen = $movimientoModel->getResumenUsuario($_SESSION['user_id']);
 
 include APP_PATH . '/views/partials/header.php';
@@ -63,8 +64,18 @@ include APP_PATH . '/views/partials/user-tabs.php';
             </div>
         <?php else: ?>
             <div class="products-grid">
-                <?php foreach ($productos as $producto): ?>
-                    <div class="product-card">
+                <?php foreach ($productos as $producto): 
+                    $stockMinimo = $producto['stock_minimo'] ?? 5;
+                    $isOutOfStock = $producto['stock'] == 0;
+                    $isLowStock = !$isOutOfStock && $producto['stock'] <= $stockMinimo;
+                ?>
+                    <div class="product-card <?= $isOutOfStock ? 'out-of-stock' : '' ?>" style="position: relative;">
+                        <?php if ($isOutOfStock): ?>
+                            <span class="out-of-stock-badge"><i class="fas fa-ban"></i> Agotado</span>
+                        <?php elseif ($isLowStock): ?>
+                            <span class="low-stock-badge"><i class="fas fa-exclamation-triangle"></i> Pocas uds.</span>
+                        <?php endif; ?>
+                        
                         <?php if ($producto['imagen']): ?>
                             <img src="/uploads/productos/<?= htmlspecialchars($producto['imagen']) ?>" 
                                  alt="<?= htmlspecialchars($producto['nombre']) ?>" 
@@ -78,10 +89,10 @@ include APP_PATH . '/views/partials/user-tabs.php';
                         <div class="product-info">
                             <h3 class="product-name"><?= htmlspecialchars($producto['nombre']) ?></h3>
                             <div class="product-price"><?= number_format($producto['precio_venta'], 2, ',', '.') ?> €</div>
-                            <div class="product-stock <?= $producto['stock'] <= 5 ? ($producto['stock'] == 0 ? 'out' : 'low') : '' ?>">
+                            <div class="product-stock <?= $isOutOfStock ? 'out' : ($isLowStock ? 'low' : '') ?>">
                                 <i class="fas fa-cubes"></i>
-                                <?php if ($producto['stock'] == 0): ?>
-                                    Sin stock
+                                <?php if ($isOutOfStock): ?>
+                                    <strong>Agotado temporalmente</strong>
                                 <?php else: ?>
                                     <?= $producto['stock'] ?> disponibles
                                 <?php endif; ?>
@@ -89,14 +100,19 @@ include APP_PATH . '/views/partials/user-tabs.php';
                         </div>
                         
                         <div class="product-actions">
-                            <button 
-                                class="btn btn-primary" 
-                                style="width: 100%;"
-                                onclick="registrarConsumo(<?= $producto['id'] ?>, '<?= htmlspecialchars($producto['nombre']) ?>')"
-                                <?= $producto['stock'] == 0 ? 'disabled' : '' ?>
-                            >
-                                <i class="fas fa-plus-circle"></i> Coger
-                            </button>
+                            <?php if ($isOutOfStock): ?>
+                                <button class="btn btn-secondary" style="width: 100%;" disabled>
+                                    <i class="fas fa-clock"></i> No disponible
+                                </button>
+                            <?php else: ?>
+                                <button 
+                                    class="btn btn-primary" 
+                                    style="width: 100%;"
+                                    onclick="registrarConsumo(<?= $producto['id'] ?>, '<?= htmlspecialchars(addslashes($producto['nombre'])) ?>')"
+                                >
+                                    <i class="fas fa-plus-circle"></i> Coger
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

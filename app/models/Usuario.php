@@ -52,7 +52,7 @@ class Usuario
         $offset = ($page - 1) * $perPage;
         
         // Obtener registros
-        $sql = "SELECT id, nombre_usuario, email, nombre_completo, rol, activo, 
+        $sql = "SELECT id, nombre_usuario, email, telefono, nombre_completo, rol, activo, 
                        debe_cambiar_password, fecha_registro, ultimo_acceso 
                 FROM {$this->table} 
                 WHERE {$whereClause} 
@@ -112,6 +112,7 @@ class Usuario
             'nombre_usuario' => $data['nombre_usuario'],
             'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
             'email' => $data['email'],
+            'telefono' => $data['telefono'] ?? null,
             'nombre_completo' => $data['nombre_completo'] ?? null,
             'rol' => $data['rol'] ?? 'user',
             'debe_cambiar_password' => $data['debe_cambiar_password'] ?? 1,
@@ -126,7 +127,7 @@ class Usuario
      */
     public function update(int $id, array $data): bool
     {
-        $allowedFields = ['nombre_usuario', 'email', 'nombre_completo', 'rol', 'activo', 'debe_cambiar_password'];
+        $allowedFields = ['nombre_usuario', 'email', 'telefono', 'nombre_completo', 'rol', 'activo', 'debe_cambiar_password'];
         $updateData = array_intersect_key($data, array_flip($allowedFields));
 
         if (empty($updateData)) {

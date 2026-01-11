@@ -8,16 +8,20 @@ $pageTitle = 'Mis Movimientos';
 require_once APP_PATH . '/models/Database.php';
 require_once APP_PATH . '/models/Movimiento.php';
 require_once APP_PATH . '/models/Producto.php';
+require_once APP_PATH . '/models/Configuracion.php';
 
 use App\Models\Movimiento;
 use App\Models\Producto;
+use App\Models\Configuracion;
 
 $movimientoModel = new Movimiento();
 $productoModel = new Producto();
+$configModel = new Configuracion();
+$defaultPerPage = (int) $configModel->get('items_por_pagina', 10);
 
 // Parámetros de filtro y paginación
 $page = (int) ($_GET['page'] ?? 1);
-$perPage = (int) ($_GET['perPage'] ?? 10);
+$perPage = (int) ($_GET['perPage'] ?? $defaultPerPage);
 $filters = [
     'usuario_id' => $_SESSION['user_id'],
     'producto_id' => $_GET['producto_id'] ?? null,
@@ -99,6 +103,10 @@ include APP_PATH . '/views/partials/user-tabs.php';
                 </button>
                 <a href="/user/movimientos" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Limpiar
+                </a>
+                <a href="/export?action=export&type=movimientos&<?= http_build_query(array_filter($filters)) ?>" 
+                   target="_blank" class="btn btn-info">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
                 </a>
             </div>
         </div>

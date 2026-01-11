@@ -1,6 +1,8 @@
 <?php
 $mustChange = $_SESSION['must_change_password'] ?? false;
 $pageTitle = $mustChange ? 'Cambiar Contraseña (Obligatorio)' : 'Cambiar Contraseña';
+$isAdmin = ($_SESSION['user_role'] ?? '') === 'admin';
+$favicon = $isAdmin ? '/images/favicon_rojo.ico' : '/images/favicon_azul.ico';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -8,15 +10,17 @@ $pageTitle = $mustChange ? 'Cambiar Contraseña (Obligatorio)' : 'Cambiar Contra
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> - FrigoTIC</title>
+    <link rel="icon" type="image/x-icon" href="<?= $favicon ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= $favicon ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="login-page <?= $_SESSION['user_role'] === 'admin' ? 'theme-admin' : '' ?>">
+<body class="login-page <?= $isAdmin ? 'theme-admin' : '' ?>">
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
                 <div class="login-logo">
-                    <i class="fas fa-key"></i>
+                    <img src="/images/Logo.png" alt="FrigoTIC" style="width: 80px; height: auto;">
                 </div>
                 <h1 class="login-title"><?= $pageTitle ?></h1>
                 <?php if ($mustChange): ?>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - FrigoTIC</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_azul.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon_azul.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -12,7 +14,7 @@
         <div class="login-card">
             <div class="login-header">
                 <div class="login-logo">
-                    <i class="fas fa-snowflake"></i>
+                    <img src="/images/Logo.png" alt="FrigoTIC" style="width: 80px; height: auto;">
                 </div>
                 <h1 class="login-title">FrigoTIC</h1>
                 <p class="login-subtitle">Gestión del frigorífico compartido</p>
