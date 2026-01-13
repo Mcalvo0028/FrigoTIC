@@ -27,7 +27,7 @@ INSERT INTO usuarios (nombre_usuario, password_hash, email, telefono, nombre_com
 INSERT INTO configuracion (clave, valor, tipo, descripcion) VALUES
 -- Configuración General
 ('app_nombre', 'FrigoTIC', 'string', 'Nombre de la aplicación'),
-('app_version', '1.1.0', 'string', 'Versión actual de la aplicación'),
+('app_version', '1.1.1', 'string', 'Versión actual de la aplicación'),
 ('empresa', 'MJCRSoftware', 'string', 'Nombre de la empresa'),
 
 -- Configuración de Base de Datos (referencia, se lee del .env)
