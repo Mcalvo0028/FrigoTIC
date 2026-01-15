@@ -50,14 +50,19 @@
                     <label for="password" class="form-label">
                         <i class="fas fa-lock"></i> Contraseña
                     </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        class="form-control" 
-                        placeholder="Ingresa tu contraseña"
-                        required
-                    >
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-control" 
+                            placeholder="Ingresa tu contraseña"
+                            required
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)" title="Mostrar/ocultar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
@@ -73,5 +78,22 @@
     </div>
 
     <script src="/js/app.js"></script>
+    <script>
+    // Toggle mostrar/ocultar contraseña
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    </script>
 </body>
 </html>

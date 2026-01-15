@@ -182,8 +182,13 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 
                 <div class="form-group">
                     <label class="form-label">Contraseña</label>
-                    <input type="password" name="db_pass" class="form-control" 
-                           placeholder="<?= empty($dbConfig['pass']) ? 'Sin contraseña' : '••••••••' ?>">
+                    <div class="password-wrapper">
+                        <input type="password" name="db_pass" id="db_pass" class="form-control" 
+                               placeholder="<?= empty($dbConfig['pass']) ? 'Sin contraseña' : '••••••••' ?>">
+                        <button type="button" class="password-toggle" onclick="togglePassword('db_pass', this)" title="Mostrar/ocultar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <small class="form-text">Dejar vacío para mantener la actual</small>
                 </div>
                 
@@ -210,17 +215,32 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 
                 <div class="form-group">
                     <label class="form-label">Contraseña actual</label>
-                    <input type="password" name="current_password" class="form-control" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="current_password" id="current_password_admin" class="form-control" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('current_password_admin', this)" title="Mostrar/ocultar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Nueva contraseña</label>
-                    <input type="password" name="new_password" class="form-control" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="new_password" id="new_password_admin" class="form-control" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('new_password_admin', this)" title="Mostrar/ocultar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Confirmar contraseña</label>
-                    <input type="password" name="confirm_password" class="form-control" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="confirm_password" id="confirm_password_admin" class="form-control" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirm_password_admin', this)" title="Mostrar/ocultar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">
@@ -268,8 +288,13 @@ include APP_PATH . '/views/partials/admin-tabs.php';
                 
                 <div class="form-group">
                     <label class="form-label">Contraseña de aplicación</label>
-                    <input type="password" name="smtp_password" class="form-control" 
-                           placeholder="<?= empty($smtpConfig['password']) ? 'Sin configurar' : '••••••••' ?>">
+                    <div class="password-wrapper">
+                        <input type="password" name="smtp_password" id="smtp_password" class="form-control" 
+                               placeholder="<?= empty($smtpConfig['password']) ? 'Sin configurar' : '••••••••' ?>">
+                        <button type="button" class="password-toggle" onclick="togglePassword('smtp_password', this)" title="Mostrar/ocultar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <small class="form-text">Dejar vacío para mantener la actual</small>
                 </div>
                 
@@ -428,6 +453,22 @@ function testDatabase() {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('db_action').value = 'save_database';
 });
+
+// Toggle mostrar/ocultar contraseña
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
 </script>
 
 <?php include APP_PATH . '/views/partials/footer.php'; ?>

@@ -3,6 +3,10 @@
  * FrigoTIC - Error 404
  */
 $pageTitle = 'Página no encontrada';
+
+// Detectar la base URL de la aplicación
+$scriptName = dirname($_SERVER['SCRIPT_NAME']);
+$baseUrl = ($scriptName !== '/' && $scriptName !== '\\') ? $scriptName : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -110,7 +114,7 @@ $pageTitle = 'Página no encontrada';
             Parece que te has perdido buscando en el frigorífico. 
             La página que buscas no existe o ha sido movida.
         </p>
-        <a href="/" class="btn">
+        <a href="<?= $baseUrl ?>/" class="btn">
             <i class="fas fa-home"></i> Volver al inicio
         </a>
         <div class="fridge-animation">

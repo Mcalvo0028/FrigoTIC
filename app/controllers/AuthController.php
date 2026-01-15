@@ -203,11 +203,11 @@ class AuthController
     private function redirectByRole(): void
     {
         if ($this->mustChangePassword()) {
-            header('Location: /frigotic/cambiar-password');
+            header('Location: /cambiar-password');
         } elseif ($this->isAdmin()) {
-            header('Location: /frigotic/admin/dashboard');
+            header('Location: /admin/dashboard');
         } else {
-            header('Location: /frigotic/user/productos');
+            header('Location: /user/productos');
         }
         exit;
     }
@@ -218,12 +218,12 @@ class AuthController
     public function requireAuth(): void
     {
         if (!$this->isLoggedIn()) {
-            header('Location: /frigotic/login');
+            header('Location: /login');
             exit;
         }
 
         if ($this->mustChangePassword() && !$this->isChangePasswordPage()) {
-            header('Location: /frigotic/cambiar-password');
+            header('Location: /cambiar-password');
             exit;
         }
     }
@@ -236,7 +236,7 @@ class AuthController
         $this->requireAuth();
 
         if (!$this->isAdmin()) {
-            header('Location: /frigotic/user/productos');
+            header('Location: /user/productos');
             exit;
         }
     }
