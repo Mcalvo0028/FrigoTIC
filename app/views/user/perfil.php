@@ -8,9 +8,11 @@ $pageTitle = 'Mi Perfil';
 require_once APP_PATH . '/models/Database.php';
 require_once APP_PATH . '/models/Usuario.php';
 require_once APP_PATH . '/models/Movimiento.php';
+require_once APP_PATH . '/controllers/AuthController.php';
 
 use App\Models\Usuario;
 use App\Models\Movimiento;
+use App\Controllers\AuthController;
 
 $usuarioModel = new Usuario();
 $movimientoModel = new Movimiento();
@@ -23,40 +25,51 @@ $message = null;
 $messageType = 'info';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    
-    if ($action === 'update_email') {
-        $newEmail = trim($_POST['email'] ?? '');
-        if (filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
-            if (!$usuarioModel->emailExists($newEmail, $_SESSION['user_id'])) {
-                $usuarioModel->update($_SESSION['user_id'], ['email' => $newEmail]);
-                $_SESSION['user_email'] = $newEmail;
-                $message = 'Email actualizado correctamente';
-                $messageType = 'success';
-                $usuario['email'] = $newEmail;
+    // Verificar token CSRF
+    $csrfToken = $_POST['csrf_token'] ?? '';
+    if (!AuthController::verifyCsrfToken($csrfToken)) {
+        $message = 'Error de seguridad. Por favor, recarga la página e intenta de nuevo.';
+        $messageType = 'danger';
+    } else {
+        $action = $_POST['action'] ?? '';
+        
+        if ($action === 'update_email') {
+            $newEmail = trim($_POST['email'] ?? '');
+            if (filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
+                if (!$usuarioModel->emailExists($newEmail, $_SESSION['user_id'])) {
+                    $usuarioModel->update($_SESSION['user_id'], ['email' => $newEmail]);
+                    $_SESSION['user_email'] = $newEmail;
+                    $message = 'Email actualizado correctamente';
+                    $messageType = 'success';
+                    $usuario['email'] = $newEmail;
+                } else {
+                    $message = 'Este email ya está en uso';
+                    $messageType = 'danger';
+                }
             } else {
-                $message = 'Este email ya está en uso';
+                $message = 'Email no válido';
                 $messageType = 'danger';
             }
-        } else {
-            $message = 'Email no válido';
-            $messageType = 'danger';
-        }
-    } elseif ($action === 'update_password') {
-        $currentPassword = $_POST['current_password'] ?? '';
-        $newPassword = $_POST['new_password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
-        
-        if ($newPassword !== $confirmPassword) {
-            $message = 'Las contraseñas no coinciden';
-            $messageType = 'danger';
-        } elseif (!$usuarioModel->verifyPassword($currentPassword, $usuario['password_hash'])) {
-            $message = 'Contraseña actual incorrecta';
-            $messageType = 'danger';
-        } else {
-            $usuarioModel->updatePassword($_SESSION['user_id'], $newPassword);
-            $message = 'Contraseña actualizada correctamente';
-            $messageType = 'success';
+        } elseif ($action === 'update_password') {
+            $currentPassword = $_POST['current_password'] ?? '';
+            $newPassword = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            
+            if (strlen($newPassword) < 6) {
+                $message = 'La contraseña debe tener al menos 6 caracteres';
+                $messageType = 'danger';
+            } elseif ($newPassword !== $confirmPassword) {
+                $message = 'Las contraseñas no coinciden';
+                $messageType = 'danger';
+            } elseif (!$usuarioModel->verifyPassword($currentPassword, $usuario['password_hash'])) {
+                $message = 'Contraseña actual incorrecta';
+                $messageType = 'danger';
+            } else {
+                $usuarioModel->updatePassword($_SESSION['user_id'], $newPassword);
+                AuthController::regenerateCsrfToken();
+                $message = 'Contraseña actualizada correctamente';
+                $messageType = 'success';
+            }
         }
     }
 }
@@ -124,6 +137,7 @@ include APP_PATH . '/views/partials/user-tabs.php';
         </div>
         <div class="card-body">
             <form method="POST" action="">
+                <?= \App\Controllers\AuthController::csrfField() ?>
                 <input type="hidden" name="action" value="update_email">
                 
                 <div class="form-group">
@@ -154,6 +168,7 @@ include APP_PATH . '/views/partials/user-tabs.php';
         </div>
         <div class="card-body">
             <form method="POST" action="">
+                <?= \App\Controllers\AuthController::csrfField() ?>
                 <input type="hidden" name="action" value="update_password">
                 
                 <div class="form-group">

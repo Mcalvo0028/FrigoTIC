@@ -31,6 +31,7 @@
             <?php endif; ?>
 
             <form method="POST" action="/login" id="loginForm">
+                <?= \App\Controllers\AuthController::csrfField() ?>
                 <div class="form-group">
                     <label for="username" class="form-label">
                         <i class="fas fa-user"></i> Usuario

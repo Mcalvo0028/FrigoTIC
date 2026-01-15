@@ -1,5 +1,80 @@
 # 📋 Registro de Procesos - FrigoTIC
 
+## Versión 1.1.1 - Mejoras de Seguridad
+
+### Nuevas Funcionalidades de Seguridad ✅
+
+1. **Protección CSRF (Cross-Site Request Forgery)**
+   - Tokens CSRF generados para cada sesión
+   - Verificación en todos los formularios críticos (login, cambio contraseña, perfil)
+   - Métodos: `generateCsrfToken()`, `verifyCsrfToken()`, `regenerateCsrfToken()`, `csrfField()`
+   - Regeneración automática del token tras acciones críticas
+
+2. **Rate Limiting (Protección contra Fuerza Bruta)**
+   - Máximo 5 intentos de login antes del bloqueo
+   - Bloqueo de 15 minutos tras exceder los intentos
+   - Basado en IP del cliente
+   - Logs de seguridad para intentos bloqueados
+
+3. **Prevención de Enumeración de Usuarios**
+   - Mensaje de error genérico: "Las credenciales proporcionadas no son válidas"
+   - No se diferencia entre usuario inexistente, inactivo o contraseña incorrecta
+   - Tiempo de respuesta constante para evitar ataques de timing
+
+4. **Mejoras en Validación de Sesión**
+   - Validación por dominio (evita compartir sesiones entre dominios)
+   - Verificación de fingerprint (User-Agent)
+   - Timeout de inactividad (30 minutos)
+   - Regeneración de session ID tras login exitoso
+   - Reinicio de sesión tras destrucción para evitar errores
+
+5. **Logging de Seguridad**
+   - Registro de logins exitosos con IP
+   - Registro de logouts con usuario e IP
+   - Registro de bloqueos por rate limiting
+   - Registro de sesiones expiradas por inactividad
+   - Registro de posibles robos de sesión (User-Agent diferente)
+
+6. **Mejoras en Validación de Contraseña**
+   - Longitud mínima de 6 caracteres
+   - Validación tanto en cambio de contraseña como en perfil de usuario
+
+### Mejoras de UI ✅
+
+1. **Toggle de Visibilidad de Contraseña**
+   - Icono de ojo dentro del campo de contraseña
+   - Disponible en: login, cambio de contraseña, perfil, configuración
+   - Separador visual entre campo y botón
+   - Cambio de icono al alternar (ojo abierto/cerrado)
+
+### Archivos Modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `app/controllers/AuthController.php` | CSRF, Rate Limiting, mensajes genéricos, validación sesión mejorada, DI |
+| `app/views/auth/login.php` | Campo CSRF, toggle contraseña |
+| `app/views/auth/change-password.php` | Campo CSRF, toggle contraseña |
+| `app/views/user/perfil.php` | Campo CSRF, validación CSRF, toggle contraseña, validación longitud |
+| `public/css/style.css` | Estilos para `.password-wrapper` y `.password-toggle` |
+| `version_info.txt` | Actualizado a 1.1.1 |
+
+### Correcciones de Bugs
+
+- ✅ URLs hardcodeadas con `/frigotic/` causaban error 404
+- ✅ Sesiones compartidas entre localhost y frigotic.es (ahora aisladas por dominio)
+- ✅ `isChangePasswordPage()` usaba `strpos()` (ahora comparación exacta)
+- ✅ `destroySession()` fallaba si la sesión no estaba activa
+
+### Constantes de Configuración
+
+```php
+MAX_LOGIN_ATTEMPTS = 5           // Intentos antes de bloqueo
+LOCKOUT_TIME = 900               // 15 minutos de bloqueo
+GENERIC_LOGIN_ERROR = '...'      // Mensaje genérico de error
+```
+
+---
+
 ## Versión 1.1.0 - Mejoras y Correcciones
 
 ### Nuevas Funcionalidades ✅

@@ -42,6 +42,7 @@ $favicon = $isAdmin ? '/images/favicon_rojo.ico' : '/images/favicon_azul.ico';
             <?php endif; ?>
 
             <form method="POST" action="/cambiar-password" id="changePasswordForm">
+                <?= \App\Controllers\AuthController::csrfField() ?>
                 <?php if (!$mustChange): ?>
                     <div class="form-group">
                         <label for="current_password" class="form-label">
